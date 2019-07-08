@@ -1,0 +1,23 @@
+{
+    "name": "nanosch/hexphp",
+    "authors": [
+        {
+            "name": "Nanosch Adams",
+            "email": "adams@nanosch.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hexopia\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    }
+}
