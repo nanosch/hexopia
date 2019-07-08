@@ -7,6 +7,8 @@ use Hexopia\Hex\Types\HexEmpty;
 use Hexopia\Hex\Types\HexHero;
 use Hexopia\Map\Plotter\Helpers\ConsoleHexTemplates;
 use Tests\Mocks\CustomConsoleHexTemplates;
+use Tests\Mocks\FunctionalConsoleHexTemplates;
+use Tests\Mocks\HexHeroWithName;
 
 class ConsoleHexTemplatesTest extends \PHPUnit\Framework\TestCase
 {
@@ -50,5 +52,20 @@ class ConsoleHexTemplatesTest extends \PHPUnit\Framework\TestCase
         $drawing = CustomConsoleHexTemplates::forHex($hex);
 
         $this->assertEquals('x', $drawing[2][4]);
+    }
+
+    /**
+     * @test
+     */
+    public function custom_function_hex()
+    {
+        $hex = new Hex(
+            0, 0,
+            new HexHeroWithName('nanosch')
+        );
+
+        $drawing = FunctionalConsoleHexTemplates::forHex($hex);
+
+        $this->assertStringContainsString('nanosch', implode($drawing[2]));
     }
 }

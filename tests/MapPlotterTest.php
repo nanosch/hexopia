@@ -7,6 +7,8 @@ use Hexopia\Hex\Hex;
 use Hexopia\Map\Map;
 use Hexopia\Map\Plotter\ConsoleMapPlotter;
 use Tests\Mocks\CustomConsoleHexTemplates;
+use Tests\Mocks\FunctionalConsoleHexTemplates;
+use Tests\Mocks\HexHeroWithName;
 
 class MapPlotterTest extends \PHPUnit\Framework\TestCase
 {
@@ -112,5 +114,48 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->assertEquals(7, $emptyFields);
+    }
+
+    /**
+     * @test
+     */
+    public function custom_function_templates()
+    {
+        $emptyFields = 0;
+        $heros = 0;
+        $map = Map::hex(1);
+
+        $template = new FunctionalConsoleHexTemplates();
+
+        $hero = new Hex(
+            0, 0,
+            new HexHeroWithName('nanosch')
+        );
+
+        $map->place($hero);
+
+        $screenMap = ConsoleMapPlotter::draw($map, $template);
+
+        echo PHP_EOL;
+
+        $screenMap->plot();
+
+        echo PHP_EOL;
+
+        foreach ($screenMap->screen as $row) {
+
+            if (strpos(implode($row), 'nanosch')) {
+                $heros++;
+            }
+
+            foreach ($row as $char) {
+                if ($char == '.') {
+                    $emptyFields++;
+                }
+            }
+        }
+
+        $this->assertEquals(1, $heros);
+        $this->assertEquals(6, $emptyFields);
     }
 }
