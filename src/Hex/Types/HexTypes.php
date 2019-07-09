@@ -7,5 +7,5 @@ abstract class HexTypes
     const EMPTY = 'empty';
     const HERO  = 'hero';
 
-    public static $value;
+    public $value;
 }

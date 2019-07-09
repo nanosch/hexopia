@@ -11,7 +11,7 @@ class Hex
 {
     protected $q;
     protected $r;
-    protected $type;
+    public $type;
 
     function __construct($q, $r, HexTypes $type = null)
     {
@@ -24,7 +24,7 @@ class Hex
         $this->type = $type;
     }
 
-    protected function s(): int
+    public function s(): int
     {
         return -$this->q -$this->r;
     }
@@ -62,7 +62,41 @@ class Hex
 
     public static function round(Hex $hex)
     {
-        
+                                    // 0.3
+                                    // 0.4
+                                    // -0.7
+
+//        var_dump($hex->q, $hex->s(), $hex->r);
+//        echo PHP_EOL;
+//
+//        $rx = round($hex->q);       // 0
+//        $ry = round($hex->s());     // 0
+//        $rz = round($hex->r);       // -1
+//
+//        var_dump($rx, $ry, $rz);
+//        echo PHP_EOL;
+//
+//        $x_diff = abs($rx - $hex->q);   // 0.3
+//        $y_diff = abs($ry - $hex->s()); // 0.4
+//        $z_diff = abs($rz - $hex->r);   // 0.3
+//
+//        var_dump($x_diff, $y_diff, $z_diff);
+//        echo PHP_EOL;
+//
+//        if ($x_diff > $y_diff && $x_diff > $z_diff) {
+//            $rx = -$ry-$rz;
+//        } else if ($y_diff > $z_diff) {
+//            $ry = -$rx-$rz;
+//        } else {
+//            echo "WooooT" . PHP_EOL;
+//            $rz = -$rx-$ry;
+//        }
+//
+//        var_dump($rx, $ry, $rz);
+//            echo PHP_EOL;
+//        die();
+//
+//        return new Hex($rx, $rz);
     }
     
     public function length(): int

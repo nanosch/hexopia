@@ -4,7 +4,7 @@ namespace Hexopia\Hex\Types;
 
 class HexHero extends HexTypes
 {
-    public static $value;
+    public $value;
 
     function __construct()
     {

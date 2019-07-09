@@ -4,7 +4,7 @@ namespace Hexopia\Hex\Types;
 
 class HexEmpty extends HexTypes
 {
-    public static $value = self::EMPTY;
+    public $value = self::EMPTY;
 
     function __construct()
     {
