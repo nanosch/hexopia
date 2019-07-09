@@ -4,7 +4,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 $size = readline('Triangle Size:');
 
-$map = \Hexopia\Map\Map::triangle($size);
+$map = \Hexopia\Map\Shapes\TriangleMap::triangle($size);
 
 $screen = \Hexopia\Map\ConsolePlotter\MapPlotter::draw($map);
 
