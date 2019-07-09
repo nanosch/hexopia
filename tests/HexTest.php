@@ -9,7 +9,6 @@ class HexTest extends \PHPUnit\Framework\TestCase
 
     public function hexProvider()
     {
-        // Struct: q, r, s
         return [
             [0, 0, 0],
             [0, -1, 1],
@@ -238,6 +237,47 @@ class HexTest extends \PHPUnit\Framework\TestCase
                     $a->lerp($b, 0.501)
                 )
             )
+        );
+    }
+
+    public function lineDrawDataProvider()
+    {
+        // [0] = start [1] = target [2] = line
+        return [
+            [
+                new Hex(0, 0), new Hex(1, -5),
+                [
+                    new Hex(0, 0), new Hex(0, -1), new Hex(0, -2),
+                    new Hex(1, -3), new Hex(1, -4), new Hex(1, -5)
+                ]
+            ],
+            [
+                new Hex(-2, 2), new Hex(2, -1),
+                [
+                    new Hex(-2, 2), new Hex(-1, 1), new Hex(0, 1),
+                    new Hex(1, 0), new Hex(2, -1)
+                ]
+            ],
+            [
+                new Hex(-1, 0), new Hex(2, -1),
+                [
+                    new Hex(-1, 0), new Hex(0, 0),
+                    new Hex(1, -1), new Hex(2, -1)
+                ]
+            ],
+        ];
+    }
+    
+    /**
+     * @test
+     *
+     * @dataProvider lineDrawDataProvider
+     */
+    public function draw_a_line_from_hex_to_hex($start, $target, $line)
+    {
+        $this->assertEquals(
+            $line,
+            $start->linedraw($target)
         );
     }
 }

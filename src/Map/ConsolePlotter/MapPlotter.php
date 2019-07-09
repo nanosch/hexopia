@@ -25,9 +25,11 @@ class MapPlotter
         }
     }
 
-    public function plot()
+    public function plot($renderScreen = true)
     {
-        $this->frame->render();
+        if ($renderScreen) {
+            $this->frame->render();
+        }
 
         foreach ($this->frame->display as $key => $line) {
 

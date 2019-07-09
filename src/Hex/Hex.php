@@ -88,6 +88,25 @@ class Hex
         );
     }
     
+    public function linedraw(Hex $target)
+    {
+        $N = $this->distance($target);
+
+        $self_nudge = new Hex($this->q + 0.000001, $this->r + 0.000001);
+        $target_nudge = new Hex($target->q + 0.000001, $target->r + 0.000001);
+
+        $line = [];
+        $step = 1.0 / max($N, 1);
+
+        for ($i = 0; $i <= $N; $i++) {
+            $line[] = Hex::round(
+                $self_nudge->lerp($target_nudge, $step * $i)
+            );
+        }
+
+        return $line;
+    }
+    
     public function length(): int
     {
         return (int) ((abs($this->q) + abs($this->r) + abs($this->s())) / 2);
