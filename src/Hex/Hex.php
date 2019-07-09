@@ -24,7 +24,7 @@ class Hex
         $this->type = $type;
     }
 
-    public function s(): int
+    public function s()
     {
         return -$this->q -$this->r;
     }
@@ -62,41 +62,30 @@ class Hex
 
     public static function round(Hex $hex)
     {
-                                    // 0.3
-                                    // 0.4
-                                    // -0.7
+        $qi = round($hex->q);
+        $ri = round($hex->r);
+        $si = round($hex->s());
 
-//        var_dump($hex->q, $hex->s(), $hex->r);
-//        echo PHP_EOL;
-//
-//        $rx = round($hex->q);       // 0
-//        $ry = round($hex->s());     // 0
-//        $rz = round($hex->r);       // -1
-//
-//        var_dump($rx, $ry, $rz);
-//        echo PHP_EOL;
-//
-//        $x_diff = abs($rx - $hex->q);   // 0.3
-//        $y_diff = abs($ry - $hex->s()); // 0.4
-//        $z_diff = abs($rz - $hex->r);   // 0.3
-//
-//        var_dump($x_diff, $y_diff, $z_diff);
-//        echo PHP_EOL;
-//
-//        if ($x_diff > $y_diff && $x_diff > $z_diff) {
-//            $rx = -$ry-$rz;
-//        } else if ($y_diff > $z_diff) {
-//            $ry = -$rx-$rz;
-//        } else {
-//            echo "WooooT" . PHP_EOL;
-//            $rz = -$rx-$ry;
-//        }
-//
-//        var_dump($rx, $ry, $rz);
-//            echo PHP_EOL;
-//        die();
-//
-//        return new Hex($rx, $rz);
+        $q_diff = abs($qi - $hex->q);
+        $r_diff = abs($ri - $hex->r);
+        $s_diff = abs($si - $hex->s());
+
+        if ($q_diff > $r_diff && $q_diff > $s_diff) {
+            $qi = -$ri -$si;
+        }
+        else if ($r_diff > $s_diff) {
+            $ri = -$qi -$si;
+        }
+
+        return new Hex($qi, $ri);
+    }
+    
+    public function lerp(Hex $pos, $t)
+    {
+        return new Hex(
+            $this->q * (1.0 - $t) + $pos->q * $t,
+            $this->r * (1.0 - $t) + $pos->r * $t
+        );
     }
     
     public function length(): int

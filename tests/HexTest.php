@@ -192,57 +192,52 @@ class HexTest extends \PHPUnit\Framework\TestCase
         $b = new Hex(1.0, -1.0);
         $c = new Hex(0.0, -1.0);
 
+        $this->assertTrue(
+            Hex::round(
+                $a
+            )->equals(
+                Hex::round(new Hex(
+                    $a->q * 0.4 + $b->q * 0.3 + $c->q * 0.3,
+                    $a->r * 0.4 + $b->r * 0.3 + $c->r * 0.3
+                ))
+            )
+        );
 
-//        $this->assertTrue(
-//            (new Hex(0.0, 0.0))
-//                ->lerp(new Hex(10.0, -20.0), 0.5)
-//                ->round()
-//                ->equals(new Hex(5, -10, 5))
-//        );
+        $this->assertTrue(
+            Hex::round(
+                $c
+            )->equals(
+                Hex::round(new Hex(
+                    $a->q * 0.3 + $b->q * 0.3 + $c->q * 0.4,
+                    $a->r * 0.3 + $b->r * 0.3 + $c->r * 0.4
+                ))
+            )
+        );
 
-//        $this->assertTrue(
-//            Hex::round(
-//                $a
-//            )->equals(
-//                Hex::round(new Hex(
-//                    $a->q * 0.4 + $b->q * 0.3 + $c->q * 0.3,
-//                    $a->r * 0.4 + $b->r * 0.3 + $c->r * 0.3
-//                ))
-//            )
-//        );
+        $this->assertTrue(
+            Hex::round(
+                (new Hex(0.0, 0.0))->lerp(new Hex(10.0, -20.0), 0.5)
+            )->equals(new Hex(5, -10))
+        );
 
+        $this->assertTrue(
+            Hex::round(
+                $a
+            )->equals(
+                Hex::round(
+                    $a->lerp($b, 0.499)
+                )
+            )
+        );
 
-//                Hex::round(new Hex(
-//                    $a->q * 0.3 + $b->q * 0.3 + $c->q * 0.4,
-//                    $a->r * 0.3 + $b->r * 0.3 + $c->r * 0.4
-//                ));
-
-
-//        echo PHP_EOL;
-//        var_dump(
-//            $a->q * 0.3 + $b->q * 0.3 + $c->q * 0.4,
-//            $a->r * 0.3 + $b->r * 0.3 + $c->r * 0.4,
-//            Hex::round($c),
-//            Hex::round(new Hex(
-//                $a->q * 0.3 + $b->q * 0.3 + $c->q * 0.4,
-//                $a->r * 0.3 + $b->r * 0.3 + $c->r * 0.4
-//            ))
-//        );
-
-//        $this->assertTrue(
-//            Hex::round(
-//                $c
-//            )->equals(
-//                Hex::round(new Hex(
-//                    $a->q * 0.3 + $b->q * 0.3 + $c->q * 0.4,
-//                    $a->r * 0.3 + $b->r * 0.3 + $c->r * 0.4
-//                ))
-//            )
-//        );
-
-
-
-        // Tests.equalHex("hex_round 2", a.round(), a.lerp(b, 0.499).round());
-        // Tests.equalHex("hex_round 3", b.round(), a.lerp(b, 0.501).round());
+        $this->assertTrue(
+            Hex::round(
+                $b
+            )->equals(
+                Hex::round(
+                    $a->lerp($b, 0.501)
+                )
+            )
+        );
     }
 }
