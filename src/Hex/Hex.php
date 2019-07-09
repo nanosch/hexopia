@@ -2,6 +2,7 @@
 
 namespace Hexopia\Hex;
 
+use Hexopia\Hex\Helpers\HexDiagnoalDirections;
 use Hexopia\Hex\Helpers\HexDirections;
 use Hexopia\Hex\Types\HexEmpty;
 use Hexopia\Hex\Types\HexTypes;
@@ -72,6 +73,11 @@ class Hex
     public function neighbor(int $neighbor): Hex
     {
         return self::add($this, HexDirections::hex($neighbor));
+    }
+
+    public function diagonalNeighbor(int $neighbor): Hex
+    {
+        return self::add($this, HexDiagnoalDirections::hex($neighbor));
     }
 
     function __get($name)

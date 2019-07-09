@@ -161,4 +161,25 @@ class HexTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($hex->neighbor($n)->equals($neighbor));
     }
+
+    public function hexMinusOneOneDiagonalNeighbor()
+    {
+        return [
+            [0, 1, 0], [1, 0, -1], [2, -2, -0],
+            [3, -3, 2], [4, -2, 3], [5, 0, 2]
+        ];
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider hexMinusOneOneDiagonalNeighbor
+     */
+    public function hex_diagonal_neighbor($n, $nq, $nr)
+    {
+        $hex = new Hex(-1, 1);
+        $neighbor = new Hex($nq, $nr);
+
+        $this->assertTrue($hex->diagonalNeighbor($n)->equals($neighbor));
+    }
 }
