@@ -148,7 +148,7 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
                 $map->hasNeighbor(new Hex(0,0), $i)
             );
         }
-        
+
         for($i = 3; $i < 6; $i++){
             $this->assertTrue(
                 $map->hasNeighbor(new Hex(1, -1), $i)
