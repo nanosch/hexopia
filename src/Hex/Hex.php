@@ -127,14 +127,6 @@ class Hex
         return self::add($this, HexDiagnoalDirections::hex($neighbor));
     }
 
-//    public function lerp($b, $t)
-//    {
-//        return new Hex(
-//            $this->q * (1.0 - $t) + $b->q * $t,
-//            $this->r * (1.0 - $t) + $b->r * $t
-//        );
-//    }
-
     function __get($name)
     {
         if (property_exists(self::class, $name)) {
