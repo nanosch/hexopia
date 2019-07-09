@@ -5,7 +5,7 @@ namespace Test;
 use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexEmpty;
 use Hexopia\Hex\Types\HexHero;
-use Hexopia\Map\Plotter\Helpers\ConsoleHexTemplates;
+use Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates;
 use Tests\Mocks\CustomConsoleHexTemplates;
 use Tests\Mocks\FunctionalConsoleHexTemplates;
 use Tests\Mocks\HexHeroWithName;

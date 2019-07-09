@@ -5,9 +5,9 @@ namespace Test;
 use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexHero;
 use Hexopia\Hex\Types\HexTypes;
-use Hexopia\Map\Map;
+use Hexopia\Map\Shapes\HexMap;
 
-class MapTest extends \PHPUnit\Framework\TestCase
+class HexMapTest extends \PHPUnit\Framework\TestCase
 {
     public function mapAssertions()
     {
@@ -25,7 +25,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
      */
     public function generateHexagonalMap($radius, $anzHex)
     {
-        $map = Map::hex($radius);
+        $map = HexMap::hex($radius);
 
         $this->assertCount($anzHex, $map->hexagons);
     }
@@ -35,7 +35,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
      */
     public function place_custom_hex()
     {
-        $map = Map::hex(1);
+        $map = HexMap::hex(1);
 
         $hero = new Hex(1, -1, new HexHero());
 

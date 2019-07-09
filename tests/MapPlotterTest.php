@@ -4,15 +4,16 @@ namespace Test;
 
 use Hexopia\Hex\Types\HexHero;
 use Hexopia\Hex\Hex;
-use Hexopia\Map\Map;
-use Hexopia\Map\Plotter\ConsoleMapPlotter;
+use Hexopia\Map\ConsolePlotter\MapPlotter;
+use Hexopia\Map\Shapes\HexMap;
+use Hexopia\Map\Shapes\TriangleMap;
 use Tests\Mocks\CustomConsoleHexTemplates;
 use Tests\Mocks\FunctionalConsoleHexTemplates;
 use Tests\Mocks\HexHeroWithName;
 
 class MapPlotterTest extends \PHPUnit\Framework\TestCase
 {
-    public function mapAssertions()
+    public function hexMapAssertions()
     {
         return [
             [0, 1], [1, 7],
@@ -24,14 +25,14 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
      * @test
      * An Empty Map is
      *
-     * @dataProvider mapAssertions
+     * @dataProvider hexMapAssertions
      */
-    public function draw_empty_map($radius, $anzHex)
+    public function draw_empty_hex_map($radius, $anzHex)
     {
         $emptyFields = 0;
-        $map = Map::hex($radius);
+        $map = HexMap::hex($radius);
 
-        $screenMap = ConsoleMapPlotter::draw($map);
+        $screenMap = MapPlotter::draw($map);
 
         echo PHP_EOL;
 
@@ -39,7 +40,44 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
         echo PHP_EOL;
 
-        foreach ($screenMap->screen as $rows) {
+        foreach ($screenMap->frame->display as $rows) {
+            foreach ($rows as $char) {
+                if ($char == '.') {
+                    $emptyFields++;
+                }
+            }
+        }
+
+        $this->assertEquals($anzHex, $emptyFields);
+    }
+
+    public function triangleMapAssertions()
+    {
+        return [
+            [0, 1], [1, 3],
+            [2, 6], [3, 10]
+        ];
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider triangleMapAssertions
+     */
+    public function draw_empty_triangle_map($size, $anzHex)
+    {
+        $emptyFields = 0;
+        $map = TriangleMap::triangle($size);
+
+        $screenMap = MapPlotter::draw($map);
+
+        echo PHP_EOL;
+
+        $screenMap->plot();
+
+        echo PHP_EOL;
+
+        foreach ($screenMap->frame->display as $rows) {
             foreach ($rows as $char) {
                 if ($char == '.') {
                     $emptyFields++;
@@ -52,20 +90,18 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * An Empty Map is
-     *
      */
     public function draw_hero_in_map()
     {
         $emptyFields = 0;
         $heros = 0;
-        $map = Map::hex(1);
+        $map = HexMap::hex(1);
 
         $hero = new Hex(1, -1, new HexHero());
 
         $map->place($hero);
 
-        $screenMap = ConsoleMapPlotter::draw($map);
+        $screenMap = MapPlotter::draw($map);
 
         echo PHP_EOL;
 
@@ -73,7 +109,7 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
         echo PHP_EOL;
 
-        foreach ($screenMap->screen as $rows) {
+        foreach ($screenMap->frame->display as $rows) {
             foreach ($rows as $char) {
                 if ($char == '.') {
                     $emptyFields++;
@@ -93,11 +129,11 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
     public function custom_templates()
     {
         $emptyFields = 0;
-        $map = Map::hex(1);
+        $map = HexMap::hex(1);
 
         $template = new CustomConsoleHexTemplates();
 
-        $screenMap = ConsoleMapPlotter::draw($map, $template);
+        $screenMap = MapPlotter::draw($map, $template);
 
         echo PHP_EOL;
 
@@ -105,7 +141,7 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
         echo PHP_EOL;
 
-        foreach ($screenMap->screen as $rows) {
+        foreach ($screenMap->frame->display as $rows) {
             foreach ($rows as $char) {
                 if ($char == 'x') {
                     $emptyFields++;
@@ -123,7 +159,7 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
     {
         $emptyFields = 0;
         $heros = 0;
-        $map = Map::hex(1);
+        $map = HexMap::hex(1);
 
         $template = new FunctionalConsoleHexTemplates();
 
@@ -134,7 +170,7 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
         $map->place($hero);
 
-        $screenMap = ConsoleMapPlotter::draw($map, $template);
+        $screenMap = MapPlotter::draw($map, $template);
 
         echo PHP_EOL;
 
@@ -142,7 +178,7 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
         echo PHP_EOL;
 
-        foreach ($screenMap->screen as $row) {
+        foreach ($screenMap->frame->display as $row) {
 
             if (strpos(implode($row), 'nanosch')) {
                 $heros++;

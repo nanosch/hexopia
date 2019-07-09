@@ -2,7 +2,7 @@
 
 namespace Tests\Mocks;
 
-class CustomConsoleHexTemplates extends \Hexopia\Map\Plotter\Helpers\ConsoleHexTemplates
+class CustomConsoleHexTemplates extends \Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates
 {
     protected static $empty = [
         [' ', ' ', '_', '_', '_', '_', '_', ' ', ' '],

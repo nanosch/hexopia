@@ -5,7 +5,7 @@ namespace Tests\Mocks;
 use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexTypes;
 
-class FunctionalConsoleHexTemplates extends \Hexopia\Map\Plotter\Helpers\ConsoleHexTemplates
+class FunctionalConsoleHexTemplates extends \Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates
 {
     public static function hero($hex)
     {
@@ -13,7 +13,7 @@ class FunctionalConsoleHexTemplates extends \Hexopia\Map\Plotter\Helpers\Console
         $start   = strlen($hex->type->name) < 6 ? ceil((8 - strlen($hex->type->name))  / 2) : 1;
 
         for ($i = 0; $i < strlen($hex->type->name); $i++) {
-            if ($key > 7) {
+            if ($i > 7) {
                 break;
             }
 

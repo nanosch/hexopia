@@ -1,6 +1,6 @@
 <?php
 
-namespace Hexopia\Map\Plotter\Helpers;
+namespace Hexopia\Map\ConsolePlotter\Helpers;
 
 use Hexopia\Hex\Types\HexTypes;
 use Hexopia\Hex\Hex;
