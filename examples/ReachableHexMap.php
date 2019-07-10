@@ -1,16 +1,37 @@
 <?php
 
+use Hexopia\Hex\Hex;
+use Hexopia\Hex\Types\HexHero;
+use Hexopia\Hex\Types\HexHighlighted;
+use Hexopia\Map\ConsolePlotter\MapPlotter;
+
 require __DIR__.'/../vendor/autoload.php';
 
 $map = \Hexopia\Map\Shapes\HexMap::hex(5);
+
+$movement = readline('Number of Moves:');
 
 $obstacles = createObstacles();
 
 $map->placeMany($obstacles);
 
-$screen = \Hexopia\Map\ConsolePlotter\MapPlotter::draw($map);
+$reachable = $map->reachable($movement);
 
-$screen->plot();
+foreach ($reachable as $highlight) {
+    $highlight->type = new HexHighlighted();
+}
+
+$map->placeMany($reachable);
+
+$map->place(
+    new Hex(0,0, new HexHero())
+);
+
+$plotter = MapPlotter::draw($map);
+
+echo PHP_EOL;
+
+$plotter->plot();
 
 echo PHP_EOL;
 

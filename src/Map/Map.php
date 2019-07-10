@@ -33,7 +33,7 @@ class Map
     {
         $key = $this->search($hex->neighbor($i));
 
-        return $key ? $this->hexagons[$key] : null;
+        return $key !== false ? $this->hexagons[$key] : null;
     }
 
     public function place(Hex $replacement)
