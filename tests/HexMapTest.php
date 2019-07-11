@@ -224,4 +224,34 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
             }
         }
     }
+
+    /**
+     * @test
+     */
+    public function map_approachable_neighbors()
+    {
+        $map = HexMap::hex(1);
+
+        $map->place(new Hex(
+            1, -1, new HexObstacle()
+        ));
+
+        $map->place(new Hex(
+            -1, 1, new HexObstacle()
+        ));
+
+        $approachable = $map->approachableNeighbors(
+            new Hex(0, 0)
+        );
+
+        $this->assertCount(4, $approachable);
+
+        $this->assertNotFalse(HexArr::search(new Hex(-1, 0), $approachable));
+
+        $this->assertNotFalse(HexArr::search(new Hex(0, -1), $approachable));
+
+        $this->assertNotFalse(HexArr::search(new Hex(0, 1), $approachable));
+
+        $this->assertNotFalse(HexArr::search(new Hex(1, 0), $approachable));
+    }
 }

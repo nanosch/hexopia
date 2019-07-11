@@ -26,7 +26,7 @@ class ConsoleHexTemplates
     protected static $highlighted = [
         [' ', ' ', "_", '_', '_', '_', '_', ' ', ' '],
         [' ', '/', ' ', ' ', ' ', ' ', ' ', '\\', ' '],
-        ['/', ' ', ' ', ' ', "\033[1m\033[32m×\033[0m\033[0m", ' ', ' ', ' ', '\\'],
+        ['/', ' ', ' ', ' ', '×', ' ', ' ', ' ', '\\'],
         ['\\', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '/'],
         [' ', '\\', '_', '_', '_', '_', '_', '/', ' '],
     ];
@@ -39,6 +39,16 @@ class ConsoleHexTemplates
         [' ', '\\', '_', '_', '_', '_', '_', '/', ' '],
     ];
 
+    protected static function highlighted(Hex $hex)
+    {
+        $hexTemplate = static::$highlighted;
+        $hexTemplate[2][4] = str_replace(
+            '%color%', $hex->type->colorCode, "\033[1m\033[%color%m×\033[0m\033[0m"
+        );
+
+        return $hexTemplate;
+    }
+
     public static function forHex(Hex $hex)
     {
         switch ($hex->type->value) {
@@ -46,7 +56,7 @@ class ConsoleHexTemplates
                 return static::$hero;
                 break;
             case HexTypes::HIGHLIGHTED:
-                return static::$highlighted;
+                return static::highlighted($hex);
                 break;
             case HexTypes::OBSTACLE:
                 return static::$obstacle;

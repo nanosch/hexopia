@@ -2,11 +2,13 @@
 
 namespace Hexopia\Map;
 
+use Ds\PriorityQueue;
 use Hexopia\Hex\Helpers\HexArr;
 use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexHighlighted;
 use Hexopia\Hex\Types\HexObstacle;
 use Hexopia\Hex\Types\HexTypes;
+use Hexopia\Map\ConsolePlotter\MapPlotter;
 
 class Map
 {
@@ -48,6 +50,15 @@ class Map
 
         return $neighbors;
     }
+    
+    public function approachableNeighbors(Hex $hex)
+    {
+        $candidates = $this->neighbors($hex);
+
+        return array_filter($candidates, function($candidate){
+            return ! ($candidate->type instanceof HexObstacle);
+        });
+    }
 
     public function place(Hex $replacement)
     {
@@ -77,8 +88,51 @@ class Map
 
         $this->placeMany($line, new HexHighlighted());
     }
+    
+    public function pathFromTo(Hex $start, Hex $target)
+    {
+        $frontier = new PriorityQueue();
+        $frontier->push($start, 0);
+        $cameFrom = new \Ds\Map();
+        $costSoFar = new \Ds\Map();
+        $cameFrom->put($start, null);
+        $costSoFar->put($start, 0);
+
+        while ($frontier->count() > 0) {
+            $current = $frontier->pop();
+
+            if ($current->equals($target)) {
+                break;
+            }
+
+            foreach ($this->approachableNeighbors($current) as $next) {
+                $newCost = $costSoFar[$current] + $current->distance($next);
+
+                if ( ! $costSoFar->hasKey($next) || $newCost < $costSoFar->get($next)) {
+                    $costSoFar->put($next, $newCost);
+                    $priority = $newCost + $next->distance($target);
+                    $frontier->push($next, -$priority);
+                    $cameFrom->put($next, $current);
+                }
+            }
+        }
 
 
+
+        if (! $cameFrom->hasKey($target)) {
+            return null;
+        }
+
+        $previous = $target;
+
+        do {
+
+            $path[] = $previous;
+
+        } while($previous = $cameFrom->get($previous));
+
+        return array_reverse($path);
+    }
 
     public function reachable($movement, Hex $start = null)
     {

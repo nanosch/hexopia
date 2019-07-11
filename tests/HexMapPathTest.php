@@ -99,6 +99,36 @@ class HexMapPathTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($isOutOfRange);
     }
 
+    public function pathDataProvider()
+    {
+        // start, $target, $path
+        return [
+            [new Hex(0,0), new Hex(-1,0), [
+                new Hex(0,0), new Hex(-1, 0)
+            ]],
+            [new Hex(0,1), new Hex(-4,2), [
+                0 => new Hex(0,1), 1 => new Hex(0, 0), 2 => new Hex(-1, 0),
+                3 => new Hex(-2, 0), 4 => new Hex(-3, 1), 5 => new Hex(-4, 2)
+            ]],
+        ];
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider pathDataProvider
+     */
+    public function path_From_to($start, $target, $path)
+    {
+        $map = HexMap::hex(5);
+
+        $obstacles = $this->createObstacles();
+
+        $map->placeMany($obstacles);
+
+        $this->assertEquals($path, $map->pathFromTo($start, $target));
+    }
+
     function createObstacles() {
         $obstacles[] = new Hex(
             1, -1, new HexObstacle()

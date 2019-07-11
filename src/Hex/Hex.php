@@ -2,12 +2,13 @@
 
 namespace Hexopia\Hex;
 
+use Ds\Hashable;
 use Hexopia\Hex\Helpers\HexDiagnoalDirections;
 use Hexopia\Hex\Helpers\HexDirections;
 use Hexopia\Hex\Types\HexEmpty;
 use Hexopia\Hex\Types\HexTypes;
 
-class Hex
+class Hex implements Hashable
 {
     protected $q;
     protected $r;
@@ -29,7 +30,7 @@ class Hex
         return -$this->q -$this->r;
     }
 
-    public function equals(Hex $hex): bool
+    public function equals($hex): bool
     {
         return $this->q == $hex->q
             && $this->r == $hex->r
@@ -136,5 +137,10 @@ class Hex
         if (method_exists(self::class, $name)) {
             return $this->$name();
         }
+    }
+
+    function hash()
+    {
+        return spl_object_hash($this);
     }
 }
