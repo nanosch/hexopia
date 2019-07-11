@@ -94,11 +94,8 @@ class Map
             $fringes[] = [];
 
             foreach ($fringes[$i - 1] as $hex) {
-                for ($direction = 0; $direction < 6; $direction++) {
-                    $candidate = $this->neighbor($hex, $direction);
-
+                foreach ($this->neighbors($hex) as $candidate) {
                     if (
-                        $candidate &&
                         HexArr::search($candidate, $visited) === false &&
                         ! ($candidate->type instanceof HexObstacle)
                     ) {
