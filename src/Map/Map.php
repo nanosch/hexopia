@@ -36,6 +36,19 @@ class Map
         return $key !== false ? $this->hexagons[$key] : null;
     }
 
+    public function neighbors(Hex $hex)
+    {
+        $neighbors = [];
+
+        for ($i = 0; $i < 6; $i++) {
+            if (($candidate = $this->neighbor($hex, $i)) !== null) {
+                $neighbors[] = $candidate;
+            }
+        }
+
+        return $neighbors;
+    }
+
     public function place(Hex $replacement)
     {
         foreach ($this->hexagons as $key => $hex) {

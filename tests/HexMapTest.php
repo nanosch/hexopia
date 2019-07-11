@@ -193,4 +193,34 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
             );
         }
     }
+
+    /**
+     * @test
+     */
+    public function map_hex_neighbors()
+    {
+        $map = HexMap::hex(1);
+
+        foreach ($map->hexagons as $hex) {
+            $neighbors = $map->neighbors($hex);
+
+            if ($hex->equals(new Hex(0,0))) {
+                $this->assertCount(6, $neighbors);
+            } else {
+                $this->assertCount(3, $neighbors);
+            }
+
+            for ($i = 0; $i < 6; $i++) {
+                if ($map->hasNeighbor($hex, $i)) {
+                    $this->assertNotFalse(
+                        array_search($map->neighbor($hex, $i), $neighbors)
+                    );
+                } else {
+                    $this->assertFalse(
+                        array_search($map->neighbor($hex, $i), $neighbors)
+                    );
+                }
+            }
+        }
+    }
 }
