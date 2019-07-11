@@ -129,6 +129,25 @@ class HexMapPathTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($path, $map->pathFromTo($start, $target));
     }
 
+    /**
+     * @test
+     *
+     * @dataProvider pathDataProvider
+     */
+    public function path_between($start, $target, $path)
+    {
+        $map = HexMap::hex(5);
+
+        $obstacles = $this->createObstacles();
+
+        $map->placeMany($obstacles);
+
+        array_shift($path);
+        array_pop($path);
+
+        $this->assertEquals($path, $map->pathBetween($start, $target));
+    }
+
     function createObstacles() {
         $obstacles[] = new Hex(
             1, -1, new HexObstacle()

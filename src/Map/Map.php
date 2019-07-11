@@ -133,6 +133,16 @@ class Map
 
         return array_reverse($path);
     }
+    
+    public function pathBetween(Hex $start, Hex $target)
+    {
+        $fullPath = $this->pathFromTo($start, $target);
+
+        array_shift($fullPath);
+        array_pop($fullPath);
+
+        return $fullPath;
+    }
 
     public function reachable($movement, Hex $start = null)
     {
