@@ -2,6 +2,7 @@
 
 namespace Test;
 
+use Hexopia\Hex\Helpers\HexArr;
 use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexHero;
 use Hexopia\Hex\Types\HexObstacle;
@@ -213,11 +214,11 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
             for ($i = 0; $i < 6; $i++) {
                 if ($map->hasNeighbor($hex, $i)) {
                     $this->assertNotFalse(
-                        array_search($map->neighbor($hex, $i), $neighbors)
+                        HexArr::search($map->neighbor($hex, $i), $neighbors)
                     );
                 } else {
                     $this->assertFalse(
-                        array_search($map->neighbor($hex, $i), $neighbors)
+                        HexArr::search($map->neighbor($hex, $i), $neighbors)
                     );
                 }
             }

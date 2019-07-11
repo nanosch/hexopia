@@ -6,8 +6,12 @@ use Hexopia\Hex\Hex;
 
 class HexArr
 {
-    public static function search(Hex $needle, $haystack)
+    public static function search(Hex $needle = null, $haystack)
     {
+        if (!$needle) {
+            return false;
+        }
+
         foreach ($haystack as $key => $hexagon) {
             if ($needle->equals($hexagon)) {
                 return $key;
