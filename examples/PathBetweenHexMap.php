@@ -12,6 +12,10 @@ $obstacles = createObstacles();
 
 $map->placeMany($obstacles);
 
+$plotter = MapPlotter::draw($map);
+
+$plotter->plot();
+
 do {
     $sq = readline('Start Q: ');
     $sr = readline('Start R: ');
