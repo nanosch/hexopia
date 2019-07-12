@@ -16,7 +16,7 @@ class HexMap extends Map
 
     public static function hex($radius)
     {
-        $map = new HexMap($radius);
+        $map = new static($radius);
 
         for ($q = -$radius; $q <= $radius; $q++) {
 
