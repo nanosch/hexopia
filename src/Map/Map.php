@@ -8,7 +8,6 @@ use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexHighlighted;
 use Hexopia\Hex\Types\HexObstacle;
 use Hexopia\Hex\Types\HexTypes;
-use Hexopia\Map\ConsolePlotter\MapPlotter;
 
 class Map
 {
