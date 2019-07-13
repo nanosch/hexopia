@@ -5,24 +5,16 @@ namespace Hexopia\Hex;
 use Ds\Hashable;
 use Hexopia\Hex\Helpers\HexDiagnoalDirections;
 use Hexopia\Hex\Helpers\HexDirections;
-use Hexopia\Hex\Types\HexEmpty;
-use Hexopia\Hex\Types\HexTypes;
 
 class Hex implements Hashable
 {
     protected $q;
     protected $r;
-    public $type;
 
-    function __construct($q, $r, HexTypes $type = null)
+    function __construct($q, $r)
     {
-        if (!$type) {
-            $type = new HexEmpty();
-        }
-
         $this->q = $q;
         $this->r = $r;
-        $this->type = $type;
     }
 
     public function s()
