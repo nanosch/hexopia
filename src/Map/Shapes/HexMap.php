@@ -4,6 +4,7 @@ namespace Hexopia\Map\Shapes;
 
 use Hexopia\Hex\Hex;
 use Hexopia\Map\Map;
+use Hexopia\Map\MapField;
 
 class HexMap extends Map
 {
@@ -11,6 +12,8 @@ class HexMap extends Map
 
     function __construct($radius = null)
     {
+        parent::__construct();
+
         $this->radius = $radius;
     }
 
@@ -24,8 +27,8 @@ class HexMap extends Map
             $r2 = min($radius, -$q + $radius);
 
             for ($r = $r1; $r <= $r2; $r++) {
-                $map->insert(
-                    new Hex($q, $r)
+                $map->put(
+                    MapField::makeEmpty($q, $r)
                 );
             }
         }

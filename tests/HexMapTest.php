@@ -7,7 +7,10 @@ use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexHero;
 use Hexopia\Hex\Types\HexObstacle;
 use Hexopia\Hex\Types\HexTypes;
+use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\HexMap;
+use Hexopia\Objects\Obstacle;
+use Hexopia\Objects\Unit;
 
 class HexMapTest extends \PHPUnit\Framework\TestCase
 {
@@ -39,9 +42,11 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
     {
         $map = HexMap::hex(1);
 
-        $hero = new Hex(1, -1, new HexHero());
+        $unit = new Unit();
 
-        $map->place($hero);
+        $map->place(
+            MapField::make(0, 0, $unit)
+        );
 
         $heroInMap = false;
 
@@ -202,8 +207,10 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
     {
         $map = HexMap::hex(1);
 
-        foreach ($map->hexagons as $hex) {
-            $neighbors = $map->neighbors($hex);
+        foreach ($map->hexagons as $hex => $resident) {
+            $neighbors = array_map(function (MapField $neighbor){
+                return $neighbor->hex;
+            }, $map->neighbors($hex));
 
             if ($hex->equals(new Hex(0,0))) {
                 $this->assertCount(6, $neighbors);
@@ -214,11 +221,11 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
             for ($i = 0; $i < 6; $i++) {
                 if ($map->hasNeighbor($hex, $i)) {
                     $this->assertNotFalse(
-                        HexArr::search($map->neighbor($hex, $i), $neighbors)
+                        HexArr::search($map->neighbor($hex, $i)->hex, $neighbors)
                     );
                 } else {
                     $this->assertFalse(
-                        HexArr::search($map->neighbor($hex, $i), $neighbors)
+                        HexArr::search($map->neighbor($hex, $i)->hex, $neighbors)
                     );
                 }
             }
@@ -232,17 +239,23 @@ class HexMapTest extends \PHPUnit\Framework\TestCase
     {
         $map = HexMap::hex(1);
 
-        $map->place(new Hex(
-            1, -1, new HexObstacle()
-        ));
+        $map->place(
+            MapField::make(1, -1, new Obstacle())
+        );
 
-        $map->place(new Hex(
-            -1, 1, new HexObstacle()
-        ));
+        $map->place(
+            MapField::make(-1, 1, new Obstacle())
+        );
+
+        var_dump($map->hexagons);
+        die();
 
         $approachable = $map->approachableNeighbors(
             new Hex(0, 0)
         );
+
+        var_dump($approachable);
+        die();
 
         $this->assertCount(4, $approachable);
 

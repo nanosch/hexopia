@@ -30,6 +30,20 @@ class HexTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($hex->r, $r);
         $this->assertEquals($hex->s, $s);
     }
+
+    /**
+     * @test
+     *
+     * @dataProvider hexProvider
+     */
+    public function create_a_hex_static($q, $r, $s)
+    {
+        $hex = Hex::make($q, $r);
+
+        $this->assertEquals($hex->q, $q);
+        $this->assertEquals($hex->r, $r);
+        $this->assertEquals($hex->s, $s);
+    }
     
     /**
      * @test

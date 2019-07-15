@@ -4,6 +4,7 @@ namespace Hexopia\Map\Shapes;
 
 use Hexopia\Hex\Hex;
 use Hexopia\Map\Map;
+use Hexopia\Map\MapField;
 
 class TriangleMap extends Map
 {
@@ -20,7 +21,9 @@ class TriangleMap extends Map
 
         for ($q = 0; $q <= $size; $q++) {
             for ($r = 0; $r <= $size - $q; $r++) {
-                $map->insert(new Hex($q, $r));
+                $map->insert(
+                    MapField::makeEmpty($q, $r)
+                );
             }
         }
 

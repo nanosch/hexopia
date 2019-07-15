@@ -2,186 +2,188 @@
 
 namespace Hexopia\Map;
 
+use Ds\Collection;
 use Ds\PriorityQueue;
+use Hexopia\Contracts\MapGuard;
+use Hexopia\Contracts\Object;
 use Hexopia\Hex\Helpers\HexArr;
 use Hexopia\Hex\Hex;
 use Hexopia\Hex\Types\HexHighlighted;
 use Hexopia\Hex\Types\HexObstacle;
 use Hexopia\Hex\Types\HexTypes;
+use Hexopia\Map\Helpers\LazyMapGuard;
+use Hexopia\Objects\Obstacle;
 
 class Map
 {
-    protected $hexagons = [];
+    /**
+     * @var array internal array to store MapFields
+     */
+    protected $mapFields = [];
 
-    protected function insert(Hex $hex)
+    /**
+     * @var MapGuard – protect overwriting of MapFields.
+     */
+    protected $guard;
+
+    public function __construct($fields = null, MapGuard $guard = null)
     {
-        $this->hexagons[] = $hex;
-    }
-    
-    public function search(Hex $hex)
-    {
-        return HexArr::search($hex, $this->hexagons);
-    }
+        $this->guard = $guard ? $guard : new LazyMapGuard();
 
-    public function hasNeighbor(Hex $hex, $i)
-    {
-        $candidate = $hex->neighbor($i);
-
-        return $this->search($candidate) !== false;
-    }
-    
-    public function neighbor(Hex $hex, $i)
-    {
-        $key = $this->search($hex->neighbor($i));
-
-        return $key !== false ? $this->hexagons[$key] : null;
-    }
-
-    public function neighbors(Hex $hex)
-    {
-        $neighbors = [];
-
-        for ($i = 0; $i < 6; $i++) {
-            if (($candidate = $this->neighbor($hex, $i)) !== null) {
-                $neighbors[] = $candidate;
-            }
-        }
-
-        return $neighbors;
-    }
-    
-    public function approachableNeighbors(Hex $hex)
-    {
-        $candidates = $this->neighbors($hex);
-
-        return array_filter($candidates, function($candidate){
-            return ! ($candidate->type instanceof HexObstacle);
-        });
-    }
-
-    public function place(Hex $replacement)
-    {
-        foreach ($this->hexagons as $key => $hex) {
-            if ($replacement->equals($hex)) {
-                $this->hexagons[$key] = $replacement;
-            }
-        }
-    }
-
-    public function placeMany(array $hexagons, HexTypes $asType = null)
-    {
-        foreach ($hexagons as $hexagon) {
-            if ($asType) {
-                $hexagon->type = $asType;
-            }
-
-            $this->place($hexagon);
+        if ($fields) {
+            $this->putAll($fields);
         }
     }
     
-    public function drawLine(Hex $start, Hex $target)
-    {
-        $line = $start->linedraw(
-            $target
-        );
+    // Helpers
 
-        $this->placeMany($line, new HexHighlighted());
+    /**
+     * Attempts to look up a Hex in the table.
+     *
+     * @param Hex $hex
+     *
+     * @return MapField|null
+     */
+    private function lookupHex(Hex $hex)
+    {
+        if (array_key_exists($hex->hash(), $this->mapFields)) {
+            return $this->mapFields[$hex->hash()];
+        }
+
+        return null;
     }
-    
-    public function pathFromTo(Hex $start, Hex $target)
+
+    /**
+     * Attempts to look up a object in the table.
+     *
+     * @param Object $object
+     *
+     * @return MapField|null
+     */
+    private function lookupObject(Object $object): MapField
     {
-        $frontier = new PriorityQueue();
-        $frontier->push($start, 0);
-        $cameFrom = new \Ds\Map();
-        $costSoFar = new \Ds\Map();
-        $cameFrom->put($start, null);
-        $costSoFar->put($start, 0);
-
-        while ($frontier->count() > 0) {
-            $current = $frontier->pop();
-
-            if ($current->equals($target)) {
-                break;
-            }
-
-            foreach ($this->approachableNeighbors($current) as $next) {
-                $newCost = $costSoFar[$current] + $current->distance($next);
-
-                if ( ! $costSoFar->hasKey($next) || $newCost < $costSoFar->get($next)) {
-                    $costSoFar->put($next, $newCost);
-                    $priority = $newCost + $next->distance($target);
-                    $frontier->push($next, -$priority);
-                    $cameFrom->put($next, $current);
-                }
+        foreach ($this->mapFields as $mapField) {
+            if ($mapField->object === $object) {
+                return $mapField;
             }
         }
 
-
-
-        if (! $cameFrom->hasKey($target)) {
-            return null;
-        }
-
-        $previous = $target;
-
-        do {
-
-            $path[] = $previous;
-
-        } while($previous = $cameFrom->get($previous));
-
-        return array_reverse($path);
-    }
-    
-    public function pathBetween(Hex $start, Hex $target)
-    {
-        $fullPath = $this->pathFromTo($start, $target);
-
-        array_shift($fullPath);
-        array_pop($fullPath);
-
-        return $fullPath;
+        return null;
     }
 
-    public function reachable($movement, Hex $start = null)
+    // Accessor
+    /**
+     * Check for Empty Map
+     *
+     * @return bool
+     */
+    public function isEmpty()
     {
-        if (!$start) {
-            $start = new Hex(0, 0);
-        }
-
-        $visited = [$start];
-
-        $fringes = [
-            [$start]
-        ];
-
-        for ($i = 1; $i <= $movement; $i++) {
-            $fringes[] = [];
-
-            foreach ($fringes[$i - 1] as $hex) {
-                foreach ($this->neighbors($hex) as $candidate) {
-                    if (
-                        HexArr::search($candidate, $visited) === false &&
-                        ! ($candidate->type instanceof HexObstacle)
-                    ) {
-                        $visited[] = $candidate;
-                        $fringes[$i][] = $candidate;
-                    }
-                }
-            }
-        }
-
-        return $visited;
+        return $this->count() === 0;
     }
 
-    function __get($name)
+    /**
+     * Number of MapFields
+     *
+     * @return int
+     */
+    public function count()
     {
-        if (property_exists(static::class, $name)) {
-            return $this->$name;
+        return count($this->mapFields);
+    }
+
+    /**
+     * Returns all MapFields as array.
+     *
+     * @return array
+     */
+    public function fields()
+    {
+        return $this->mapFields;
+    }
+
+    /**
+     * Check if Hex exists in Map.
+     *
+     * @param Hex $hex
+     * @return bool
+     */
+    public function hasHex(Hex $hex)
+    {
+        if ($this->lookupHex($hex) !== null) {
+            return true;
         }
 
-        if (method_exists(static::class, $name)) {
-            return $this->$name();
+        return false;
+    }
+
+    /**
+     * Returns whether an association for a given value exists.
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    public function hasObject(Object $value): bool
+    {
+        return $this->lookupObject($value) !== null;
+    }
+
+    /**
+     * Returns the associated object to an hex.
+     *
+     * @param Hex $hex
+     * @return Object
+     */
+    public function get(Hex $hex)
+    {
+        return $this->lookupHex($hex)->object;
+    }
+
+    /**
+     * Returns the MapField for an hex.
+     *
+     * @param Hex $hex
+     * @return Object
+     */
+    public function getField(Hex $hex)
+    {
+        return $this->lookupHex($hex);
+    }
+
+    // Manipulator
+
+    /**
+     * Put an MapField into the Map. This is overwriting an existing object if it's already placed.
+     *
+     * @param MapField $mapField
+     * @return bool
+     */
+    public function put(MapField $mapField): bool
+    {
+
+        if ( $this->hasHex($mapField->hex) && ! $this->guard->guard(
+                $this->mapFields[$mapField->hex->hash()],
+                $mapField
+            )
+        ) {
+            return false;
+        }
+
+        $this->mapFields[$mapField->hex->hash()] = $mapField;
+
+        return true;
+    }
+
+    /**
+     * Put an Array of MapField into the Map. This overwrites all existing object if they're already placed.
+     *
+     * @param MapField[] $fields
+     */
+    public function putAll(array $fields)
+    {
+        foreach ($fields as $mapField) {
+            $this->mapFields[$mapField->hex->hash()] = $mapField;
         }
     }
 }

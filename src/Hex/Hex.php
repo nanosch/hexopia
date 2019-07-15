@@ -17,6 +17,11 @@ class Hex implements Hashable
         $this->r = $r;
     }
 
+    public static function make($q, $r)
+    {
+        return new static($q, $r);
+    }
+
     public function s()
     {
         return -$this->q -$this->r;
@@ -133,6 +138,6 @@ class Hex implements Hashable
 
     function hash()
     {
-        return spl_object_hash($this);
+        return static::class . "|q:\"$this->q\",r:\"$this->r\"";
     }
 }
