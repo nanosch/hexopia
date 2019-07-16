@@ -3,6 +3,7 @@
 namespace Hexopia\Map\ConsolePlotter\Frames;
 
 use Hexopia\Hex\Hex;
+use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\HexMap;
 
 
@@ -17,8 +18,8 @@ class HexFrame extends Frame
     {
         parent::__construct($map);
 
-        $this->rows 		= $map->radius > 0 ? $map->radius *  8 + 5 : 5;
-        $this->columns	    = $map->radius > 0 ? $map->radius * 14 + 9 : 9;
+        $this->rows 		= $map->radius() > 0 ? $map->radius() *  8 + 5 : 5;
+        $this->columns	    = $map->radius() > 0 ? $map->radius() * 14 + 9 : 9;
         $this->centerRow 	= ceil(($this->rows / 2));
         $this->centerCol	= ceil(($this->columns / 2));
 
@@ -29,11 +30,11 @@ class HexFrame extends Frame
         }
     }
 
-    public function place(Hex $hex)
+    public function place(MapField $mapField)
     {
-        $coords = $this->XyForHex($hex);
+        $coords = $this->XyForHex($mapField->hex);
 
-        $consoleHex = $this->templates::forHex($hex);
+        $consoleHex = $this->templates::forMapField($mapField);
 
         for ($y = $coords['row'] - 2, $hy = 0; $hy < count($consoleHex); $y++, $hy++) {
             for ($x = $coords['col'] - 4, $hx = 0; $hx < count($consoleHex[0]); $x++, $hx++) {

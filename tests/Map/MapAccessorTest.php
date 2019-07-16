@@ -2,18 +2,9 @@
 
 namespace Test;
 
-use Hexopia\Hex\Helpers\HexArr;
-use Hexopia\Hex\Hex;
-use Hexopia\Hex\Types\HexObstacle;
-use Hexopia\Hex\Types\HexTypes;
 use Hexopia\Map\Map;
 use Hexopia\Map\MapField;
-use Hexopia\Map\Shapes\HexMap;
-use Hexopia\Objects\Obstacle;
-use Hexopia\Objects\Unit;
-use Tests\Mocks\SampleHeroObject;
 use Tests\Mocks\SampleMonsterObject;
-use Tests\Mocks\SampleUnitGuard;
 
 class MapAccessorTest extends \PHPUnit\Framework\TestCase
 {
@@ -87,5 +78,38 @@ class MapAccessorTest extends \PHPUnit\Framework\TestCase
         $map->putAll($mapField);
 
         $this->assertTrue($map->hasObject( $mapField[1]->object ));
+    }
+
+    /**
+     * @test
+     */
+    public function get_all_map_hexagons()
+    {
+        $map = new Map();
+        $mapField[] = MapField::makeEmpty(0, 0);
+        $mapField[] = MapField::make(0, -1, new SampleMonsterObject());
+
+        $map->putAll($mapField);
+
+        $this->assertEquals([
+            $mapField[0]->hex->hash() => $mapField[0]->hex,
+            $mapField[1]->hex->hash() => $mapField[1]->hex,
+        ], $map->hexagons());
+    }
+
+    /**
+     * @test
+     */
+    public function get_all_map_objects()
+    {
+        $map = new Map();
+        $mapField[] = MapField::makeEmpty(0, 0);
+        $mapField[] = MapField::make(0, -1, new SampleMonsterObject());
+
+        $map->putAll($mapField);
+
+        $this->assertEquals([
+            $mapField[1]->hex->hash() => $mapField[1]->object,
+        ], $map->objects());
     }
 }

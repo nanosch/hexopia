@@ -5,8 +5,10 @@ namespace Test;
 use Hexopia\Hex\Types\HexHero;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\ConsolePlotter\MapPlotter;
+use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\HexMap;
 use Hexopia\Map\Shapes\TriangleMap;
+use Hexopia\Objects\Unit;
 use Tests\Mocks\CustomConsoleHexTemplates;
 use Tests\Mocks\FunctionalConsoleHexTemplates;
 use Tests\Mocks\HexHeroWithName;
@@ -97,9 +99,9 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
         $heros = 0;
         $map = HexMap::hex(1);
 
-        $hero = new Hex(1, -1, new HexHero());
+        $hero = MapField::make(0, 0, new Unit());
 
-        $map->place($hero);
+        $map->put($hero);
 
         $screenMap = MapPlotter::draw($map);
 
@@ -163,12 +165,9 @@ class MapPlotterTest extends \PHPUnit\Framework\TestCase
 
         $template = new FunctionalConsoleHexTemplates();
 
-        $hero = new Hex(
-            0, 0,
-            new HexHeroWithName('nanosch')
-        );
+        $heroField = MapField::make(0 ,0, new HexHeroWithName('nanosch'));
 
-        $map->place($hero);
+        $map->put($heroField);
 
         $screenMap = MapPlotter::draw($map, $template);
 

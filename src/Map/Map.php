@@ -5,17 +5,14 @@ namespace Hexopia\Map;
 use Ds\Collection;
 use Ds\PriorityQueue;
 use Hexopia\Contracts\MapGuard;
-use Hexopia\Contracts\Object;
-use Hexopia\Hex\Helpers\HexArr;
 use Hexopia\Hex\Hex;
-use Hexopia\Hex\Types\HexHighlighted;
-use Hexopia\Hex\Types\HexObstacle;
-use Hexopia\Hex\Types\HexTypes;
 use Hexopia\Map\Helpers\LazyMapGuard;
-use Hexopia\Objects\Obstacle;
+use Hexopia\Objects\Marker;
 
-class Map
+class Map implements \IteratorAggregate, \ArrayAccess, Collection
 {
+    use Traits\Helper, Traits\Accessor, Traits\Manipulation, Traits\Morphed;
+
     /**
      * @var array internal array to store MapFields
      */
@@ -34,156 +31,106 @@ class Map
             $this->putAll($fields);
         }
     }
-    
-    // Helpers
 
-    /**
-     * Attempts to look up a Hex in the table.
-     *
-     * @param Hex $hex
-     *
-     * @return MapField|null
-     */
-    private function lookupHex(Hex $hex)
+    // pathing
+    public function drawLine(Hex $start, Hex $target)
     {
-        if (array_key_exists($hex->hash(), $this->mapFields)) {
-            return $this->mapFields[$hex->hash()];
-        }
+        $line = $start->linedraw(
+            $target
+        );
 
-        return null;
+        $lineFields = array_map(function(Hex $hex) {
+            return MapField::makeForHex($hex, new Marker());
+        }, $line);
+
+        $this->putAll($lineFields);
     }
 
-    /**
-     * Attempts to look up a object in the table.
-     *
-     * @param Object $object
-     *
-     * @return MapField|null
-     */
-    private function lookupObject(Object $object): MapField
+    public function reachable($movement, MapField $start = null)
     {
-        foreach ($this->mapFields as $mapField) {
-            if ($mapField->object === $object) {
-                return $mapField;
+        if (!$start) {
+            $start = $this->getField(Hex::make(0, 0));
+        }
+
+        $visited[] = $start;
+
+        $fringes = [
+            [$start]
+        ];
+
+        for ($i = 1; $i <= $movement; $i++) {
+            $fringes[] = [];
+
+            foreach ($fringes[$i - 1] as $mapField) {
+                foreach ($this->neighbors($mapField->hex) as $candidate) {
+                    if (
+                        array_search($candidate, $visited) === false &&
+                        $this->isMapFieldApproachable($candidate)
+                    ) {
+                        $visited[] = $candidate;
+                        $fringes[$i][] = $candidate;
+                    }
+                }
             }
         }
 
-        return null;
+        return $visited;
     }
 
-    // Accessor
-    /**
-     * Check for Empty Map
-     *
-     * @return bool
-     */
-    public function isEmpty()
+    public function pathFromTo(Hex $start, Hex $target)
     {
-        return $this->count() === 0;
-    }
+        $frontier = new PriorityQueue();
+        $frontier->push($start, 0);
+        $cameFrom = new \Ds\Map();
+        $costSoFar = new \Ds\Map();
+        $cameFrom->put($start, null);
+        $costSoFar->put($start, 0);
 
-    /**
-     * Number of MapFields
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->mapFields);
-    }
+        while ($frontier->count() > 0) {
+            $current = $frontier->pop();
 
-    /**
-     * Returns all MapFields as array.
-     *
-     * @return array
-     */
-    public function fields()
-    {
-        return $this->mapFields;
-    }
+            if ($current->equals($target)) {
+                break;
+            }
 
-    /**
-     * Check if Hex exists in Map.
-     *
-     * @param Hex $hex
-     * @return bool
-     */
-    public function hasHex(Hex $hex)
-    {
-        if ($this->lookupHex($hex) !== null) {
-            return true;
+            $hexApprochableNeighbors = array_map(function (MapField $mapField){
+                return $mapField->hex;
+            }, $this->approachableNeighbors($current));
+
+            foreach ($hexApprochableNeighbors as $next) {
+                $newCost = $costSoFar[$current] + $current->distance($next);
+
+                if ( ! $costSoFar->hasKey($next) || $newCost < $costSoFar->get($next)) {
+                    $costSoFar->put($next, $newCost);
+                    $priority = $newCost + $next->distance($target);
+                    $frontier->push($next, -$priority);
+                    $cameFrom->put($next, $current);
+                }
+            }
         }
 
-        return false;
-    }
-
-    /**
-     * Returns whether an association for a given value exists.
-     *
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    public function hasObject(Object $value): bool
-    {
-        return $this->lookupObject($value) !== null;
-    }
-
-    /**
-     * Returns the associated object to an hex.
-     *
-     * @param Hex $hex
-     * @return Object
-     */
-    public function get(Hex $hex)
-    {
-        return $this->lookupHex($hex)->object;
-    }
-
-    /**
-     * Returns the MapField for an hex.
-     *
-     * @param Hex $hex
-     * @return Object
-     */
-    public function getField(Hex $hex)
-    {
-        return $this->lookupHex($hex);
-    }
-
-    // Manipulator
-
-    /**
-     * Put an MapField into the Map. This is overwriting an existing object if it's already placed.
-     *
-     * @param MapField $mapField
-     * @return bool
-     */
-    public function put(MapField $mapField): bool
-    {
-
-        if ( $this->hasHex($mapField->hex) && ! $this->guard->guard(
-                $this->mapFields[$mapField->hex->hash()],
-                $mapField
-            )
-        ) {
-            return false;
+        if (! $cameFrom->hasKey($target)) {
+            return null;
         }
 
-        $this->mapFields[$mapField->hex->hash()] = $mapField;
+        $previous = $target;
 
-        return true;
+        do {
+
+            $path[] = $this->getField($previous);
+
+        } while($previous = $cameFrom->get($previous));
+
+        return array_reverse($path);
     }
 
-    /**
-     * Put an Array of MapField into the Map. This overwrites all existing object if they're already placed.
-     *
-     * @param MapField[] $fields
-     */
-    public function putAll(array $fields)
+    public function pathBetween(Hex $start, Hex $target)
     {
-        foreach ($fields as $mapField) {
-            $this->mapFields[$mapField->hex->hash()] = $mapField;
-        }
+        $fullPath = $this->pathFromTo($start, $target);
+
+        array_shift($fullPath);
+        array_pop($fullPath);
+
+        return $fullPath;
     }
 }

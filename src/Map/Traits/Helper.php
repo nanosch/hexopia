@@ -2,44 +2,24 @@
 
 namespace Hexopia\Map\Traits;
 
-use Ds\Hashable;
 use Hexopia\Contracts\Object;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\MapField;
-use OutOfBoundsException;
+use Hexopia\Objects\Obstacle;
 
 trait Helper
 {
     /**
-     * Determines whether two hex are equal.
-     *
-     * @param mixed $a
-     * @param mixed $b
-     *
-     * @return bool
-     */
-    private function hexAreEqual(Hex $a, Hex $b): bool
-    {
-        if (is_object($a) && $a instanceof Hashable) {
-            return get_class($a) === get_class($b) && $a->equals($b);
-        }
-
-        return $a === $b;
-    }
-
-    /**
-     * Attempts to look up a key in the table.
+     * Attempts to look up a Hex in the table.
      *
      * @param Hex $hex
      *
      * @return MapField|null
      */
-    private function lookupHex($hex)
+    private function lookupHex(Hex $hex)
     {
-        foreach ($this->hexagons as $mapField) {
-            if ($this->keysAreEqual($mapField->key, $hex)) {
-                return $mapField;
-            }
+        if (array_key_exists($hex->hash(), $this->mapFields)) {
+            return $this->mapFields[$hex->hash()];
         }
 
         return null;
@@ -54,59 +34,38 @@ trait Helper
      */
     private function lookupObject(Object $object): MapField
     {
-        foreach ($this->hexagons as $mapField) {
+        foreach ($this->mapFields as $mapField) {
             if ($mapField->object === $object) {
                 return $mapField;
             }
         }
+
+        return null;
     }
-
-
-    public function getIterator()
+    
+    public function isMapFieldApproachable(MapField $mapField)
     {
-        foreach ($this->hexagons as $mapField) {
-            yield $mapField->hex => $mapField->object;
-        }
+        return ! ($mapField->object instanceof Obstacle);
     }
 
     /**
-     * Returns a representation to be used for var_dump and print_r.
+     * Returns a representation that can be natively converted to JSON, which is
+     * called when invoking json_encode.
+     *
+     * @return mixed
+     *
+     * @see JsonSerializable
      */
-    public function __debugInfo()
+    public function jsonSerialize()
     {
         return $this->toArray();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function offsetSet($offset, $value)
+    public function getIterator()
     {
-        $this->put($offset, $value);
-    }
-
-    /**
-     * @inheritdoc
-     *
-     * @throws OutOfBoundsException
-     */
-    public function &offsetGet($offset)
-    {
-        $mapField = $this->lookupKey($offset);
-
-        if ($mapField) {
-            return $mapField->value;
+        foreach ($this->mapFields as $mapField) {
+            yield $mapField->hex => $mapField->object;
         }
-
-        throw new OutOfBoundsException();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetUnset($offset)
-    {
-        $this->remove($offset, null);
     }
 
     /**
@@ -114,6 +73,30 @@ trait Helper
      */
     public function offsetExists($offset)
     {
-        return $this->get($offset, null) !== null;
+        return $this->hasHex($offset);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->put(MapField::make($offset, $value));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offsetUnset($offset)
+    {
+        $this->remove($offset);
     }
 }

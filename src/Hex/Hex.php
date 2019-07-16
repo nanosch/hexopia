@@ -15,6 +15,12 @@ class Hex implements Hashable
     {
         $this->q = $q;
         $this->r = $r;
+
+        if (is_float($this->q) || is_float($this->r)) {
+            $hex = Hex::round($this);
+            $this->q = $hex->q;
+            $this->r = $hex->r;
+        }
     }
 
     public static function make($q, $r)
@@ -75,7 +81,7 @@ class Hex implements Hashable
             $ri = -$qi -$si;
         }
 
-        return new Hex($qi, $ri);
+        return new Hex((int)$qi, (int)$ri);
     }
     
     public function lerp(Hex $pos, $t)

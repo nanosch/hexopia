@@ -5,7 +5,6 @@ namespace Hexopia\Map;
 use Hexopia\Contracts\Object;
 use Hexopia\Hex\Hex;
 use JsonSerializable;
-use OutOfBoundsException;
 
 /**
  * A pair which represents a key and an associated value.
@@ -51,22 +50,14 @@ final class MapField implements JsonSerializable
         return $field;
     }
 
-    /**
-     * This allows unset($pair->key) to not completely remove the property,
-     * but be set to null instead.
-     *
-     * @param mixed $name
-     *
-     * @return mixed|null
-     */
-    public function __get($name)
+    public static function makeForHex(Hex $hex, Object $object)
     {
-        if ($name === 'key' || $name === 'value') {
-            $this->$name = null;
-            return;
-        }
+        return new static($hex, $object);
+    }
 
-        throw new OutOfBoundsException();
+    public function equalField(MapField $mapField)
+    {
+        return $this->hex->equals($mapField->hex);
     }
 
     /**

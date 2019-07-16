@@ -7,6 +7,8 @@ use Hexopia\Contracts\Object;
 
 class SampleHeroObject implements Object
 {
+    public $live = 99;
+
     function hash()
     {
         return get_class($this);

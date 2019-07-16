@@ -2,7 +2,6 @@
 
 namespace Hexopia\Map\Shapes;
 
-use Hexopia\Hex\Hex;
 use Hexopia\Map\Map;
 use Hexopia\Map\MapField;
 
@@ -15,6 +14,11 @@ class HexMap extends Map
         parent::__construct();
 
         $this->radius = $radius;
+    }
+
+    public function radius()
+    {
+        return $this->radius;
     }
 
     public static function hex($radius)

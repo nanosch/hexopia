@@ -2,7 +2,6 @@
 
 namespace Test;
 
-use Hexopia\Map\ConsolePlotter\MapPlotter;
 use Hexopia\Map\ConsolePlotter\FrameFactory;
 use Hexopia\Map\ConsolePlotter\Frames\HexFrame;
 use Hexopia\Map\Shapes\HexMap;

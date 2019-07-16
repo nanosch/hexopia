@@ -5,62 +5,84 @@ namespace Hexopia\Map\Traits;
 use Hexopia\Contracts\Object;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\MapField;
-use OutOfBoundsException;
-use OutOfRangeException;
 
 trait Accessor
 {
     /**
-     * Returns whether the collection is empty.
-     *
-     * This should be equivalent to a count of zero, but is not required.
-     * Implementations should define what empty means in their own context.
+     * Check for Empty Map
      *
      * @return bool
      */
-    function isEmpty(): bool
+    public function isEmpty(): bool
     {
         return $this->count() === 0;
     }
 
     /**
-     * Returns all MapFields of the Map
+     * Number of MapFields
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->mapFields);
+    }
+
+    /**
+     * Returns all MapFields as array.
      *
      * @return array
      */
-    public function fields(): array
+    public function fields()
     {
-        return $this->hexagons;
+        return $this->mapFields;
     }
 
     /**
-     * Return the MapField at a specified position in the Map
+     * Returns a array of all the hexagons in the map.
      *
-     * @param Hex $position
-     *
-     * @return MapField
-     *
-     * @throws OutOfRangeException
+     * @return array
      */
-    public function skip(Hex $position): MapField
+    public function hexagons()
     {
-        if ( ! $this->lookupHex($position)) {
-            throw new OutOfRangeException();
-        }
+        $hex = function($mapField) {
+            return $mapField->hex;
+        };
 
-        return $this->hexagons[$position]->copy();
+        return array_map($hex, $this->mapFields);
     }
 
     /**
-     * Returns whether an association a given key exists.
+     * Returns a array of all the associated objects in the Map.
      *
-     * @param bool
+     * @return array
+     */
+    public function objects(): array
+    {
+        $objects = function($mapField) {
+            return $mapField->object;
+        };
+
+        $objects = array_map($objects, $this->mapFields);
+
+        return array_filter($objects, function ($obj) {
+            return $obj !== null;
+        });
+    }
+
+    /**
+     * Check if Hex exists in Map.
      *
+     * @param Hex $hex
      * @return bool
      */
-    public function hasKey($hex): bool
+    public function hasHex(Hex $hex)
     {
-        return $this->lookupHex($hex) !== null;
+        if ($this->lookupHex($hex) !== null) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -70,70 +92,84 @@ trait Accessor
      *
      * @return bool
      */
-    public function hasValue($value): bool
+    public function hasObject(Object $value): bool
     {
-        return $this->lookupValue($value) !== null;
+        return $this->lookupObject($value) !== null;
     }
 
     /**
-     * Returns the number of MapFields in the Map
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        return count($this->hexagons);
-    }
-
-    /**
-     * Returns the object associated with a hex, or an optional default if the
-     * hex is not associated with a object.
+     * Returns the associated object to an hex.
      *
      * @param Hex $hex
-     * @param Object $default
-     *
-     * @return Object The associated object or fallback default if provided.
-     *
+     * @return Object
      */
-    public function get(Hex $hex, Object $default = null)
+    public function get(Hex $hex)
     {
-        if (($mapfield = $this->lookupHex($hex))) {
-            return $mapfield->object;
-        }
-
-        // Check if a default was provided.
-        if (func_num_args() === 1) {
-            throw new OutOfBoundsException();
-        }
-
-        return $default;
+        return $this->lookupHex($hex) ? $this->lookupHex($hex)->object : null;
     }
 
     /**
-     * Returns a array of all the hexagons in the map.
+     * Returns the MapField for an hex.
      *
-     * @return array
+     * @param Hex $hex
+     * @return MapField
      */
-    public function keys(): array
+    public function getField(Hex $hex)
     {
-        $hex = function($mapField) {
-            return $mapField->hex;
-        };
+        return $this->lookupHex($hex);
+    }
 
-        return array_map($hex, $this->hexagons);
+    public function hasNeighbor(Hex $hex, $i)
+    {
+        $candidate = $hex->neighbor($i);
+
+        return $this->lookupHex($candidate) !== null;
     }
 
     /**
-     * Returns a array of all the associated objects in the Map.
+     * Returns a single hex neighbor at position $i
      *
-     * @return array
+     * @param Hex $hex - lookup
+     * @param $i - position of neighbor
+     * @return MapField|null neighbor as MapField
      */
-    public function values(): array
+    public function neighbor(Hex $hex, $i)
     {
-        $object = function($mapField) {
-            return $mapField->object;
-        };
+        if (! $this->hasNeighbor($hex, $i)) {
+            return null;
+        }
 
-        return array_map($object, $this->hexagons);
+        $neighbor = $hex->neighbor($i);
+
+        return new MapField($neighbor, $this->get($neighbor));
+    }
+
+    /**
+     * Returns all neighbors of a hex
+     *
+     * @param Hex $hex - lookup
+     *
+     * @return array hex neighbors
+     */
+    public function neighbors(Hex $hex)
+    {
+        $neighbors = [];
+
+        for ($i = 0; $i < 6; $i++) {
+            if (($candidate = $this->neighbor($hex, $i)) !== null) {
+                $neighbors[] = $candidate;
+            }
+        }
+
+        return $neighbors;
+    }
+
+    public function approachableNeighbors(Hex $hex)
+    {
+        $candidates = $this->neighbors($hex);
+
+        return array_filter($candidates, function($candidate){
+            return $this->isMapFieldApproachable($candidate);
+        });
     }
 }

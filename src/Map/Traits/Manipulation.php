@@ -4,20 +4,63 @@ namespace Hexopia\Map\Traits;
 
 use Hexopia\Contracts\Object;
 use Hexopia\Hex\Hex;
+use Hexopia\Map\Exceptions\OnlyObjectsAllowedAsMapValue;
 use Hexopia\Map\MapField;
 
 trait Manipulation
 {
     /**
-     * Updates all values by applying a callback function to each value.
+     * Put an MapField into the Map. This is overwriting an existing object if it's already placed.
+     *
+     * @param MapField $mapField
+     * @return bool
+     */
+    public function put(MapField $mapField): bool
+    {
+
+        if ( $this->hasHex($mapField->hex) && ! $this->guard->guard(
+                $this->mapFields[$mapField->hex->hash()],
+                $mapField
+            )
+        ) {
+            return false;
+        }
+
+        $this->mapFields[$mapField->hex->hash()] = $mapField;
+
+        return true;
+    }
+
+    /**
+     * Put an Array of MapField into the Map. This overwrites all existing object if they're already placed.
+     *
+     * @param MapField[] $fields
+     */
+    public function putAll(array $fields)
+    {
+        foreach ($fields as $mapField) {
+            $this->mapFields[$mapField->hex->hash()] = $mapField;
+        }
+    }
+
+    /**
+     * Updates all objects by applying a callback function to each object.
      *
      * @param callable $callback Accepts two arguments: $hex and $object, should
      *                           return what the updated object will be.
+     *
+     * @throws OnlyObjectsAllowedAsMapValue
      */
     public function apply(callable $callback)
     {
-        foreach ($this->hexagons as &$mapFields) {
-            $mapFields->object = $callback($mapFields->hex, $mapFields->object);
+        foreach ($this->mapFields as &$mapField) {
+            $candidate = $callback($mapField->hex, $mapField->object);
+
+            if ( ! ($candidate instanceof Object || $candidate === null )) {
+                throw new OnlyObjectsAllowedAsMapValue();
+            }
+
+            $mapField->object = $candidate;
         }
     }
 
@@ -26,69 +69,25 @@ trait Manipulation
      */
     public function clear()
     {
-        $this->hexagons = [];
-    }
-
-    /**
-     * Associates a hex with a object, replacing a previous association if there
-     * was one.
-     *
-     * @param MapField $mapField
-     */
-    public function put(MapField $mapField)
-    {
-        $field = $this->lookupHex($mapField->hex);
-
-        if ($field) {
-            $field->value = $mapField->object;
-        } else {
-            $this->hexagons[] = $mapField;
-        }
-    }
-
-    /**
-     * Creates associations for all hexagons and corresponding objects of either an
-     * array or iterable object.
-     *
-     * @param MapField ...$fields
-     */
-    public function putAll(MapField ...$fields)
-    {
-        foreach ($fields as $mapField) {
-            $this->put($mapField->hex, $mapField->object);
-        }
-    }
-
-    /**
-     * Completely removes a hexagon from the internal array by position. It is
-     * important to remove it from the array and not just use 'unset'.
-     *
-     * @param int $position
-     * @return Object
-     */
-    private function delete(int $position)
-    {
-        $mapField  = $this->hexagons[$position];
-        $object = $mapField->object;
-
-        array_splice($this->hexagons, $position, 1, null);
-
-        return $object;
+        $this->mapFields = [];
     }
 
     /**
      * Removes a hex's association from the map and returns the associated object
      * or a provided default if provided.
      *
-     * @param Hex $hex*
+     * @param Hex $hex
      * @return Object The associated object
      *
      */
     public function remove(Hex $hex)
     {
-        foreach ($this->hexagons as $position => $mapField) {
+        foreach ($this->mapFields as $mapField) {
             if ($hex->equals($mapField->hex)) {
-                return $mapField->object = null;
+                $object = $mapField->object;
+                $mapField->object = null;
+
+                return $object;
             }
         }
 

@@ -2,8 +2,9 @@
 
 namespace Hexopia\Map\ConsolePlotter\Helpers;
 
-use Hexopia\Hex\Types\HexTypes;
-use Hexopia\Hex\Hex;
+use Hexopia\Contracts\Object;
+use Hexopia\Map\MapField;
+use Hexopia\Objects\Marker;
 
 class ConsoleHexTemplates
 {
@@ -39,26 +40,30 @@ class ConsoleHexTemplates
         [' ', '\\', '_', '_', '_', '_', '_', '/', ' '],
     ];
 
-    protected static function highlighted(Hex $hex)
+    protected static function highlighted(Marker $marker)
     {
         $hexTemplate = static::$highlighted;
         $hexTemplate[2][4] = str_replace(
-            '%color%', $hex->type->colorCode, "\033[1m\033[%color%m×\033[0m\033[0m"
+            '%color%', $marker->colorCode(), "\033[1m\033[%color%m×\033[0m\033[0m"
         );
 
         return $hexTemplate;
     }
 
-    public static function forHex(Hex $hex)
+    public static function forMapField(MapField $mapField)
     {
-        switch ($hex->type->value) {
-            case HexTypes::HERO:
+        if ( ! $mapField->object) {
+            return static::$empty;
+        }
+
+        switch ($mapField->object->getType()) {
+            case Object::UNIT:
                 return static::$hero;
                 break;
-            case HexTypes::HIGHLIGHTED:
-                return static::highlighted($hex);
+            case Object::MARKER:
+                return static::highlighted($mapField->object);
                 break;
-            case HexTypes::OBSTACLE:
+            case Object::OBSTACLE:
                 return static::$obstacle;
                 break;
             default:

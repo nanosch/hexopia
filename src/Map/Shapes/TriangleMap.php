@@ -12,7 +12,14 @@ class TriangleMap extends Map
 
     function __construct($size = null)
     {
+        parent::__construct();
+
         $this->size = $size;
+    }
+    
+    public function size()
+    {
+        return $this->size;
     }
 
     public static function triangle($size)
@@ -21,7 +28,7 @@ class TriangleMap extends Map
 
         for ($q = 0; $q <= $size; $q++) {
             for ($r = 0; $r <= $size - $q; $r++) {
-                $map->insert(
+                $map->put(
                     MapField::makeEmpty($q, $r)
                 );
             }

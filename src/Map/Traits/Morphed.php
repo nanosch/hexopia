@@ -7,8 +7,6 @@ use Hexopia\Map\Map;
 
 trait Morphed
 {
-
-
     /**
      * Returns a shallow copy of the collection.
      *
@@ -16,11 +14,12 @@ trait Morphed
      */
     function copy(): Collection
     {
-        return new static($this->hexagons);
+        return new static($this->mapFields);
     }
 
+
     /**
-     * Returns a new map containing only the values for which a predicate
+     * Returns a new map containing only the objects for which a predicate
      * returns true. A boolean test will be used if a predicate is not provided.
      *
      * @param callable|null $callback Accepts a hex and a object, and returns:
@@ -33,9 +32,9 @@ trait Morphed
     {
         $filtered = new static();
 
-        foreach ($this as $hex => $object) {
-            if ($callback ? $callback($hex, $object) : $object) {
-                $filtered->put($hex, $object);
+        foreach ($this->mapFields as $mapField) {
+            if ($callback ? $callback($mapField) : $mapField) {
+                $filtered->put($mapField);
             }
         }
 
@@ -43,45 +42,18 @@ trait Morphed
     }
 
     /**
-     * Returns a new map using the results of applying a callback to each value.
+     * return map as array
      *
-     * The hex will be equal in both maps.
-     *
-     * @param callable $callback Accepts two arguments: hex and object, should
-     *                           return what the updated object will be.
-     *
-     * @return Map
+     * @return array
      */
-    public function map(callable $callback): Map
-    {
-        $apply = function($mapField) use ($callback) {
-            return $callback($mapField->hex, $mapField->object);
-        };
-
-        return new static(array_map($apply, $this->hexagons));
-    }
-
     public function toArray(): array
     {
         $array = [];
 
-        foreach ($this->hexagons as $mapField) {
-            $array[$mapField->hex] = $mapField->object;
+        foreach ($this->mapFields as $mapField) {
+            $array[$mapField->hex->hash()] = $mapField->object;
         }
 
         return $array;
-    }
-
-    /**
-     * Returns a representation that can be natively converted to JSON, which is
-     * called when invoking json_encode.
-     *
-     * @return mixed
-     *
-     * @see JsonSerializable
-     */
-    public function jsonSerialize()
-    {
-        return $this->toArray();
     }
 }

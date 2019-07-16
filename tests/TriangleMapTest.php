@@ -2,10 +2,10 @@
 
 namespace Test;
 
-use Hexopia\Hex\Hex;
-use Hexopia\Hex\Types\HexHero;
-use Hexopia\Hex\Types\HexTypes;
+use Hexopia\Contracts\Object;
+use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\TriangleMap;
+use Hexopia\Objects\Unit;
 
 class TriangleMapTest extends \PHPUnit\Framework\TestCase
 {
@@ -28,7 +28,7 @@ class TriangleMapTest extends \PHPUnit\Framework\TestCase
     {
         $map = TriangleMap::triangle($size);
 
-        $this->assertCount($anzHex, $map->hexagons);
+        $this->assertCount($anzHex, $map->fields());
     }
     
     /**
@@ -38,19 +38,19 @@ class TriangleMapTest extends \PHPUnit\Framework\TestCase
     {
         $map = TriangleMap::triangle(2);
 
-        $hero = new Hex(0, 2, new HexHero());
+        $unitField = MapField::make(0, 2, new Unit());
 
-        $map->place($hero);
+        $map->put($unitField);
 
-        $heroInMap = false;
+        $unitInMap = false;
 
-        foreach ($map->hexagons as $hex) {
-            if ($hex->type->value == HexTypes::HERO) {
-                $heroInMap = true;
+        foreach ($map->fields() as $mapField) {
+            if ($mapField->object && $mapField->object->getType() == Object::UNIT) {
+                $unitInMap = true;
             }
         }
 
-        $this->assertCount(6, $map->hexagons);
-        $this->assertTrue($heroInMap);
+        $this->assertCount(6, $map->fields());
+        $this->assertTrue($unitInMap);
     }
 }
