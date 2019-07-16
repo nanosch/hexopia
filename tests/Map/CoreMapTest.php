@@ -10,6 +10,7 @@ use Hexopia\Objects\Object;
 use Hexopia\Objects\Obstacle;
 use Hexopia\Objects\Unit;
 use Tests\Mocks\SampleHeroObject;
+use Tests\Mocks\SampleMonsterObject;
 
 class CoreMapTest extends \PHPUnit\Framework\TestCase
 {
@@ -229,5 +230,19 @@ class CoreMapTest extends \PHPUnit\Framework\TestCase
         $this->assertNotFalse(HexArr::search(new Hex(0, 1), $approachableHexagons));
 
         $this->assertNotFalse(HexArr::search(new Hex(1, 0), $approachableHexagons));
+    }
+
+    /**
+     * @test
+     */
+    public function place_object_ob_map_field()
+    {
+        $map = HexMap::hex(1);
+
+        $unit = new Unit();
+
+        $map->place(Hex::make(0, 0), $unit);
+
+        $this->assertEquals($unit, $map->get(Hex::make(0, 0)));
     }
 }

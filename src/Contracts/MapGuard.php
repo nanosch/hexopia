@@ -6,5 +6,5 @@ use Hexopia\Map\MapField;
 
 interface MapGuard
 {
-    public function guard(MapField $fieldInMap, MapField $new): bool;
+    public function allow(MapField $fieldInMap, MapField $new): bool;
 }

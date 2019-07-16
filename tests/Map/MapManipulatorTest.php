@@ -163,7 +163,10 @@ class MapManipulatorTest extends \PHPUnit\Framework\TestCase
 
         $map = new Map($mapFields);
 
-        $this->assertEquals($mapFields[1]->object, $map->remove(Hex::make(-1, 0)));
+        $this->assertEquals(
+            $mapFields[1]->object,
+            $map->remove(Hex::make(-1, 0))
+        );
 
         $this->assertCount(1, $map->objects());
 

@@ -18,7 +18,7 @@ trait Manipulation
     public function put(MapField $mapField): bool
     {
 
-        if ( $this->hasHex($mapField->hex) && ! $this->guard->guard(
+        if ( $this->hasHex($mapField->hex) && ! $this->guard->allow(
                 $this->mapFields[$mapField->hex->hash()],
                 $mapField
             )
@@ -41,6 +41,23 @@ trait Manipulation
         foreach ($fields as $mapField) {
             $this->mapFields[$mapField->hex->hash()] = $mapField;
         }
+    }
+
+    /**
+     * Place an Object at a certain Hex. if Guard allows it.
+     *
+     * @param Hex $hex
+     * @param Object $object
+     *
+     * @return bool
+     */
+    public function place(Hex $hex, Object $object)
+    {
+        if ($this->guard->allow($this->getField($hex), MapField::makeForHex($hex, $object))) {
+            $this->mapFields[$hex->hash()]->object = $object;
+        }
+
+        return false;
     }
 
     /**
@@ -82,13 +99,11 @@ trait Manipulation
      */
     public function remove(Hex $hex)
     {
-        foreach ($this->mapFields as $mapField) {
-            if ($hex->equals($mapField->hex)) {
-                $object = $mapField->object;
-                $mapField->object = null;
+        if (array_key_exists($hex->hash(), $this->mapFields)) {
+            $object = $this->get($hex);
+            $this->mapFields[$hex->hash()]->object = null;
 
-                return $object;
-            }
+            return $object;
         }
 
         return null;

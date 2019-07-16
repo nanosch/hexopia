@@ -10,6 +10,9 @@ use Hexopia\Map\Shapes\HexMap;
 use Hexopia\Objects\Marker;
 use Hexopia\Objects\Obstacle;
 use Hexopia\Objects\Unit;
+use Tests\Mocks\SampleHeroObject;
+use Tests\Mocks\SampleMonsterObject;
+use Tests\Mocks\SampleUnitGuard;
 
 class MapPathingTest extends \PHPUnit\Framework\TestCase
 {
@@ -145,6 +148,45 @@ class MapPathingTest extends \PHPUnit\Framework\TestCase
         array_pop($path);
 
         $this->assertEquals($path, $map->pathBetween($start, $target));
+    }
+    
+    /**
+     * @test
+     */
+    public function move_unit()
+    {
+        $map = HexMap::hex(5);
+
+        $obstacles = $this->createObstacles();
+
+        $map->putAll($obstacles);
+
+        $hero = new SampleHeroObject();
+
+        $map->place(Hex::make(0,0), $hero);
+
+        $this->assertTrue($map->move($hero, Hex::make(-4, 2)));
+
+        $this->assertNull($map->get(Hex::make(0, 0)));
+        $this->assertEquals($hero, $map->get(Hex::make(-4, 2)));
+    }
+
+    /**
+     * @test
+     */
+    public function hinder_unit_move()
+    {
+        $map = HexMap::hex(5, new SampleUnitGuard());
+
+        $obstacles = $this->createObstacles();
+
+        $map->putAll($obstacles);
+
+        $hero = new SampleHeroObject();
+        $monster = new SampleMonsterObject();
+
+        $this->assertTrue($map->place(Hex::make(0,0), $hero));
+        $this->assertFalse($map->place(Hex::make(0,0), $monster));
     }
 
     function createObstacles() {

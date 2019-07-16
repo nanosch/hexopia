@@ -7,7 +7,7 @@ use Hexopia\Map\MapField;
 
 class LazyMapGuard implements MapGuard
 {
-    public function guard(MapField $fieldInMap, MapField $new): bool
+    public function allow(MapField $fieldInMap, MapField $new): bool
     {
         return true;
     }
