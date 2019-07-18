@@ -2,32 +2,36 @@
 
 namespace Tests\Mocks;
 
-use Hexopia\Hex\Hex;
-use Hexopia\Hex\Types\HexTypes;
+use Hexopia\Contracts\Object;
+use Hexopia\Map\MapField;
 
 class FunctionalConsoleHexTemplates extends \Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates
 {
-    public static function hero($hex)
+    public static function hero($object)
     {
         $drawing = static::$hero;
-        $start   = strlen($hex->type->name) < 6 ? ceil((8 - strlen($hex->type->name))  / 2) : 1;
+        $start   = strlen($object->name) < 6 ? ceil((8 - strlen($object->name))  / 2) : 1;
 
-        for ($i = 0; $i < strlen($hex->type->name); $i++) {
+        for ($i = 0; $i < strlen($object->name); $i++) {
             if ($i > 7) {
                 break;
             }
 
-            $drawing[2][$i + $start] = $hex->type->name[$i];
+            $drawing[2][$i + $start] = $object->name[$i];
         }
 
         return $drawing;
     }
 
-    public static function forHex(Hex $hex)
+    public static function forMapField(MapField $mapField)
     {
-        switch ($hex->type->value) {
-            case HexTypes::HERO:
-                return static::hero($hex);
+        if ( ! $mapField->object) {
+            return static::$empty;
+        }
+
+        switch ($mapField->object->getType()) {
+            case Object::UNIT:
+                return static::hero($mapField->object);
                 break;
             default:
                 return static::$empty;

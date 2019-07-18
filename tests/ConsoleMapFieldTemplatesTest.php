@@ -3,23 +3,23 @@
 namespace Test;
 
 use Hexopia\Hex\Hex;
-use Hexopia\Hex\Types\HexEmpty;
-use Hexopia\Hex\Types\HexHero;
 use Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates;
+use Hexopia\Map\MapField;
+use Hexopia\Objects\Unit;
 use Tests\Mocks\CustomConsoleHexTemplates;
 use Tests\Mocks\FunctionalConsoleHexTemplates;
 use Tests\Mocks\HexHeroWithName;
 
-class ConsoleHexTemplatesTest extends \PHPUnit\Framework\TestCase
+class ConsoleMapFieldTemplatesTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test
      */
     public function empty_hex()
     {
-        $hex = new Hex(0, 0);
+        $mapField = MapField::makeEmpty(0, 0);
 
-        $drawing = ConsoleHexTemplates::forHex($hex);
+        $drawing = ConsoleHexTemplates::forMapField($mapField);
 
         $this->assertEquals('.', $drawing[2][4]);
     }
@@ -27,14 +27,11 @@ class ConsoleHexTemplatesTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function hero_hex()
+    public function unit_hex()
     {
-        $hex = new Hex(
-            0, 0,
-            new HexHero()
-        );
+        $mapField = MapField::make(0, 0, new Unit());
 
-        $drawing = ConsoleHexTemplates::forHex($hex);
+        $drawing = ConsoleHexTemplates::forMapField($mapField);
 
         $this->assertEquals('H', $drawing[2][4]);
     }
@@ -44,18 +41,15 @@ class ConsoleHexTemplatesTest extends \PHPUnit\Framework\TestCase
      */
     public function custom_hex()
     {
-        $hex = new Hex(
-            0, 0,
-            new HexEmpty()
-        );
+        $mapField = MapField::makeEmpty(0, 0);
 
-        $drawing = CustomConsoleHexTemplates::forHex($hex);
+        $drawing = CustomConsoleHexTemplates::forMapField($mapField);
 
         $this->assertEquals('x', $drawing[2][4]);
     }
 
     /**
-     * @test
+     * test
      */
     public function custom_function_hex()
     {
@@ -64,7 +58,7 @@ class ConsoleHexTemplatesTest extends \PHPUnit\Framework\TestCase
             new HexHeroWithName('nanosch')
         );
 
-        $drawing = FunctionalConsoleHexTemplates::forHex($hex);
+        $drawing = FunctionalConsoleHexTemplates::forMapField($hex);
 
         $this->assertStringContainsString('nanosch', implode($drawing[2]));
     }

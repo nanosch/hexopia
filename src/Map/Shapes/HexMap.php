@@ -2,21 +2,29 @@
 
 namespace Hexopia\Map\Shapes;
 
-use Hexopia\Hex\Hex;
+use Hexopia\Contracts\MapGuard;
 use Hexopia\Map\Map;
+use Hexopia\Map\MapField;
 
 class HexMap extends Map
 {
     protected $radius;
 
-    function __construct($radius = null)
+    function __construct($radius = null, MapGuard $guard = null)
     {
+        parent::__construct(null, $guard);
+
         $this->radius = $radius;
     }
 
-    public static function hex($radius)
+    public function radius()
     {
-        $map = new static($radius);
+        return $this->radius;
+    }
+
+    public static function hex($radius, MapGuard $guard = null)
+    {
+        $map = new static($radius, $guard);
 
         for ($q = -$radius; $q <= $radius; $q++) {
 
@@ -24,8 +32,8 @@ class HexMap extends Map
             $r2 = min($radius, -$q + $radius);
 
             for ($r = $r1; $r <= $r2; $r++) {
-                $map->insert(
-                    new Hex($q, $r)
+                $map->put(
+                    MapField::makeEmpty($q, $r)
                 );
             }
         }

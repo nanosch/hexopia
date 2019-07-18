@@ -2,15 +2,14 @@
 
 namespace Tests\Mocks;
 
-use Hexopia\Hex\Types\HexHero;
+use Hexopia\Objects\Unit;
 
-class HexHeroWithName extends HexHero
+class HexHeroWithName extends Unit
 {
     public $name;
 
     public function __construct($name = null)
     {
-        parent::__construct();
         $this->name = $name;
     }
 }

@@ -34,6 +34,28 @@ class HexTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
+    public function cast_zero_to_abs()
+    {
+        $this->assertEquals((new Hex(0.0,0.0))->hash(), (new Hex(-0.0, -0.0))->hash());
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider hexProvider
+     */
+    public function create_a_hex_static($q, $r, $s)
+    {
+        $hex = Hex::make($q, $r);
+
+        $this->assertEquals($hex->q, $q);
+        $this->assertEquals($hex->r, $r);
+        $this->assertEquals($hex->s, $s);
+    }
+    
+    /**
+     * @test
+     */
     public function hex_equality_check()
     {
         $hex1 = new Hex(0, 0);

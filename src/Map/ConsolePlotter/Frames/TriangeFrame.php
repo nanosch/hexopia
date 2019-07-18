@@ -3,6 +3,7 @@
 namespace Hexopia\Map\ConsolePlotter\Frames;
 
 use Hexopia\Hex\Hex;
+use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\TriangleMap;
 
 
@@ -15,8 +16,8 @@ class TriangeFrame extends Frame
     {
         parent::__construct($map);
 
-        $this->rows 		= $map->size > 0 ? $map->size * 4 + 5 : 5;
-        $this->columns	    = $map->size > 0 ? $map->size * 7 + 9 : 9;
+        $this->rows 		= $map->size() > 0 ? $map->size() * 4 + 5 : 5;
+        $this->columns	    = $map->size() > 0 ? $map->size() * 7 + 9 : 9;
 
         $this->display 		= array_fill(0, $this->rows, ' ');
 
@@ -25,11 +26,11 @@ class TriangeFrame extends Frame
         }
     }
 
-    public function place(Hex $hex)
+    public function place(MapField $mapField)
     {
-        $coords = $this->XyForHex($hex);
+        $coords = $this->XyForHex($mapField->hex);
 
-        $consoleHex = $this->templates::forHex($hex);
+        $consoleHex = $this->templates::forMapField($mapField);
 
         for ($y = $coords['row'] - 2, $hy = 0; $hy < count($consoleHex); $y++, $hy++) {
             for ($x = $coords['col'] - 4, $hx = 0; $hx < count($consoleHex[0]); $x++, $hx++) {

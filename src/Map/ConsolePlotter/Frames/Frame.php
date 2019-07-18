@@ -5,6 +5,7 @@ namespace Hexopia\Map\ConsolePlotter\Frames;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\Map;
 use Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates;
+use Hexopia\Map\MapField;
 
 abstract class Frame
 {
@@ -20,7 +21,7 @@ abstract class Frame
         $this->templates = $templates ? get_class($templates) : ConsoleHexTemplates::class;
     }
 
-    abstract public function place(Hex $hex);
+    abstract public function place(MapField $mapField);
     
     public function setTemplates(ConsoleHexTemplates $templates)
     {
@@ -30,7 +31,7 @@ abstract class Frame
     }
 
     public function render() {
-        foreach ($this->map->hexagons as $hexagon) {
+        foreach ($this->map->fields() as $hexagon) {
             $this->place($hexagon);
         }
 

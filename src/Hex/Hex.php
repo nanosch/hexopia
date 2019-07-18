@@ -5,24 +5,27 @@ namespace Hexopia\Hex;
 use Ds\Hashable;
 use Hexopia\Hex\Helpers\HexDiagnoalDirections;
 use Hexopia\Hex\Helpers\HexDirections;
-use Hexopia\Hex\Types\HexEmpty;
-use Hexopia\Hex\Types\HexTypes;
 
 class Hex implements Hashable
 {
     protected $q;
     protected $r;
-    public $type;
 
-    function __construct($q, $r, HexTypes $type = null)
+    function __construct($q, $r)
     {
-        if (!$type) {
-            $type = new HexEmpty();
-        }
-
         $this->q = $q;
         $this->r = $r;
-        $this->type = $type;
+
+        if (is_float($this->q) || is_float($this->r)) {
+            $hex = Hex::round($this);
+            $this->q = $hex->q;
+            $this->r = $hex->r;
+        }
+    }
+
+    public static function make($q, $r)
+    {
+        return new static($q, $r);
     }
 
     public function s()
@@ -78,7 +81,7 @@ class Hex implements Hashable
             $ri = -$qi -$si;
         }
 
-        return new Hex($qi, $ri);
+        return new Hex((int)$qi, (int)$ri);
     }
     
     public function lerp(Hex $pos, $t)
@@ -141,6 +144,6 @@ class Hex implements Hashable
 
     function hash()
     {
-        return spl_object_hash($this);
+        return static::class . "|q:\"$this->q\",r:\"$this->r\"";
     }
 }

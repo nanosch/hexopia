@@ -1,8 +1,9 @@
 <?php
 
-use Hexopia\Hex\Hex;
-use Hexopia\Hex\Types\HexHighlighted;
 use Hexopia\Map\ConsolePlotter\MapPlotter;
+use Hexopia\Map\MapField;
+use Hexopia\Objects\Marker;
+use Hexopia\Objects\Obstacle;
 
 require __DIR__.'/../vendor/autoload.php';
 
@@ -10,7 +11,7 @@ $map = \Hexopia\Map\Shapes\HexMap::hex(4);
 
 $obstacles = createObstacles();
 
-$map->placeMany($obstacles);
+$map->putAll($obstacles);
 
 $plotter = MapPlotter::draw($map);
 
@@ -19,9 +20,9 @@ $plotter->plot();
 do {
     $sq = readline('Start Q: ');
     $sr = readline('Start R: ');
-    $start = new Hex($sq, $sr, new HexHighlighted());
+    $start = MapField::make($sq, $sr, new Marker());
 
-    $needNew = \Hexopia\Hex\Helpers\HexArr::search($start, $obstacles);
+    $needNew = \Hexopia\Hex\Helpers\HexArr::searchMapField($start, $obstacles);
 
     if ($needNew) {
         echo "point is obstacle". PHP_EOL;
@@ -32,9 +33,9 @@ do {
 do {
     $tq = readline('Target Q: ');
     $tr = readline('Target R: ');
-    $target = new Hex($tq, $tr, new HexHighlighted(33));
+    $target = MapField::make($tq, $tr, new Marker(33));
 
-    $needNew = \Hexopia\Hex\Helpers\HexArr::search($target, $obstacles) || $target->equals($start);
+    $needNew = \Hexopia\Hex\Helpers\HexArr::searchMapField($target, $obstacles) || $target->equalField($start);
 
     if ($needNew) {
         echo "point is obstacle or start" . PHP_EOL;
@@ -42,12 +43,12 @@ do {
 
 } while($needNew);
 
-$map->placeMany(
+$map->putAll(
     [$start, $target]
 );
 
-foreach ($map->pathBetween($start, $target) as $step) {
-    $step->type = new HexHighlighted(34);
+foreach ($map->pathBetween($start->hex, $target->hex) as $step) {
+    $step->object = new Marker(34);
 
     $plotter = MapPlotter::draw($map);
 
@@ -59,63 +60,65 @@ foreach ($map->pathBetween($start, $target) as $step) {
 }
 
 
-
-
 function createObstacles() {
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        1, -1, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        1, -1, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        2, -1, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        2, -1, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        2, 0, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        2, 0, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        2, 1, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        2, 1, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        1, 2, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        1, 2, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        0, 2, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        0, 2, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        -1, 2, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -1, 2, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        -1, 1, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -1, 1, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        -2, 1, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -2, 1, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        -3, 2, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -3, 2, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        -4, 3, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -4, 3, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        -1, -1, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -5, 4, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        0, -2, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        -1, -1, new Obstacle()
     );
 
-    $obstacles[] = new \Hexopia\Hex\Hex(
-        1, -3, new \Hexopia\Hex\Types\HexObstacle()
+    $obstacles[] = MapField::make(
+        0, -2, new Obstacle()
+    );
+
+    $obstacles[] = MapField::make(
+        1, -3, new Obstacle()
     );
 
     return $obstacles;
