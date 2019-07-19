@@ -32,7 +32,7 @@ trait Helper
      *
      * @return MapField|null
      */
-    private function lookupObject(Object $object): MapField
+    private function lookupObject(MapObject $object): MapField
     {
         foreach ($this->mapFields as $mapField) {
             if ($mapField->object === $object) {

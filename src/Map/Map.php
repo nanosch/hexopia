@@ -32,7 +32,7 @@ class Map implements \IteratorAggregate, \ArrayAccess, Collection
         }
     }
 
-    public function move(Object $object, Hex $target)
+    public function move(MapObject $object, Hex $target)
     {
         $field = $this->lookupObject($object);
 

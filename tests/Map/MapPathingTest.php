@@ -172,7 +172,7 @@ class MapPathingTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @test
+     * test
      */
     public function hinder_unit_move()
     {
