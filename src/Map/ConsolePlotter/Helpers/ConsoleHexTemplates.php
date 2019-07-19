@@ -2,7 +2,7 @@
 
 namespace Hexopia\Map\ConsolePlotter\Helpers;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Map\MapField;
 use Hexopia\Objects\Marker;
 
@@ -57,13 +57,13 @@ class ConsoleHexTemplates
         }
 
         switch ($mapField->object->getType()) {
-            case Object::UNIT:
+            case MapObject::UNIT:
                 return static::$hero;
                 break;
-            case Object::MARKER:
+            case MapObject::MARKER:
                 return static::highlighted($mapField->object);
                 break;
-            case Object::OBSTACLE:
+            case MapObject::OBSTACLE:
                 return static::$obstacle;
                 break;
             default:

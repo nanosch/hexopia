@@ -4,7 +4,7 @@ namespace Hexopia\Contracts;
 
 use Ds\Hashable;
 
-interface Object extends Hashable
+interface MapObject extends Hashable
 {
     const UNIT = "unit";
     const OBSTACLE = "obstacle";

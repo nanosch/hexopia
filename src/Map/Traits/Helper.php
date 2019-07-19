@@ -2,7 +2,7 @@
 
 namespace Hexopia\Map\Traits;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\MapField;
 use Hexopia\Objects\Obstacle;
@@ -28,7 +28,7 @@ trait Helper
     /**
      * Attempts to look up a object in the table.
      *
-     * @param Object $object
+     * @param MapObject $object
      *
      * @return MapField|null
      */
@@ -42,7 +42,7 @@ trait Helper
 
         return null;
     }
-    
+
     public function isMapFieldApproachable(MapField $mapField)
     {
         return ! ($mapField->object instanceof Obstacle);

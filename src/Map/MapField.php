@@ -2,7 +2,7 @@
 
 namespace Hexopia\Map;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Hex\Hex;
 use JsonSerializable;
 
@@ -19,7 +19,7 @@ final class MapField implements JsonSerializable
     public $hex;
 
     /**
-     * @param Object $object The pair's value
+     * @param MapObject $object The pair's value
      */
     public $object;
 
@@ -27,14 +27,14 @@ final class MapField implements JsonSerializable
      * Creates a new instance.
      *
      * @param Hex $hex
-     * @param Object $object
+     * @param MapObject $object
      */
-    public function __construct(Hex $hex, Object $object = null)
+    public function __construct(Hex $hex, MapObject $object = null)
     {
         $this->hex   = $hex;
         $this->object = $object;
     }
-    
+
     public static function makeEmpty($q, $r)
     {
         return new self(
@@ -42,7 +42,7 @@ final class MapField implements JsonSerializable
         );
     }
 
-    public static function make($q, $r, Object $object)
+    public static function make($q, $r, MapObject $object)
     {
         $field = static::makeEmpty($q, $r);
         $field->object = $object;
@@ -50,7 +50,7 @@ final class MapField implements JsonSerializable
         return $field;
     }
 
-    public static function makeForHex(Hex $hex, Object $object)
+    public static function makeForHex(Hex $hex, MapObject $object)
     {
         return new static($hex, $object);
     }

@@ -6,7 +6,7 @@ use Hexopia\Hex\Helpers\HexArr;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\HexMap;
-use Hexopia\Objects\Object;
+use Hexopia\Objects\MapObject;
 use Hexopia\Objects\Obstacle;
 use Hexopia\Objects\Unit;
 use Tests\Mocks\SampleHeroObject;
@@ -51,7 +51,7 @@ class CoreMapTest extends \PHPUnit\Framework\TestCase
         $heroInMap = false;
 
         foreach ($map->fields() as $mapField) {
-            if ($mapField->object && $mapField->object->getType() == Object::UNIT) {
+            if ($mapField->object && $mapField->object->getType() == MapObject::UNIT) {
                 $heroInMap = true;
             }
         }
@@ -117,13 +117,13 @@ class CoreMapTest extends \PHPUnit\Framework\TestCase
                     );
                 } else {
                     $this->assertFalse(
-                        HexArr::search($map->neighbor($mapField->hex, $i)->hex, $neighbors)
+                        HexArr::search($mapField->hex->neighbor($i), $neighbors)
                     );
                 }
             }
         }
     }
-    
+
     /**
      * @test
      */
@@ -137,7 +137,7 @@ class CoreMapTest extends \PHPUnit\Framework\TestCase
             $mapField
         );
 
-        $this->assertEquals($mapField, $map->neighbor(Hex::make(0, 1), 6));
+        $this->assertEquals($mapField, $map->neighbor(Hex::make(0, 0), 5));
     }
 
     /**

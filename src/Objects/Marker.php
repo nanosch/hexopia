@@ -2,22 +2,22 @@
 
 namespace Hexopia\Objects;
 
-class Marker extends Object
+class Marker extends MapObject
 {
     protected $colorCode;
-    
+
     public function __construct($colorCode = 32)
     {
         $this->colorCode = $colorCode;
     }
-    
+
     public function colorCode()
     {
         return $this->colorCode;
     }
-    
+
     public function getType()
     {
-        return Object::MARKER;
+        return MapObject::MARKER;
     }
 }

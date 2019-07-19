@@ -2,11 +2,11 @@
 
 namespace Hexopia\Objects;
 
-class Obstacle extends Object
+class Obstacle extends MapObject
 {
 
     public function getType()
     {
-        return Object::OBSTACLE;
+        return MapObject::OBSTACLE;
     }
 }

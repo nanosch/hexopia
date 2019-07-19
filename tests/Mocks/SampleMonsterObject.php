@@ -3,9 +3,9 @@
 namespace Tests\Mocks;
 
 use Ds\An;
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 
-class SampleMonsterObject implements Object
+class SampleMonsterObject implements MapObject
 {
     public $live = 99;
 
@@ -21,6 +21,6 @@ class SampleMonsterObject implements Object
 
     public function getType()
     {
-        return Object::UNIT;
+        return MapObject::UNIT;
     }
 }

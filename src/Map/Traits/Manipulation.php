@@ -2,7 +2,7 @@
 
 namespace Hexopia\Map\Traits;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\Exceptions\OnlyObjectsAllowedAsMapValue;
 use Hexopia\Map\MapField;
@@ -47,11 +47,11 @@ trait Manipulation
      * Place an Object at a certain Hex. if Guard allows it.
      *
      * @param Hex $hex
-     * @param Object $object
+     * @param MapObject $object
      *
      * @return bool
      */
-    public function place(Hex $hex, Object $object)
+    public function place(Hex $hex, MapObject $object)
     {
         if ($this->guard->allow($this->getField($hex), MapField::makeForHex($hex, $object))) {
             $this->mapFields[$hex->hash()]->object = $object;
@@ -73,7 +73,7 @@ trait Manipulation
         foreach ($this->mapFields as &$mapField) {
             $candidate = $callback($mapField->hex, $mapField->object);
 
-            if ( ! ($candidate instanceof Object || $candidate === null )) {
+            if ( ! ($candidate instanceof MapObject || $candidate === null )) {
                 throw new OnlyObjectsAllowedAsMapValue();
             }
 
@@ -94,7 +94,7 @@ trait Manipulation
      * or a provided default if provided.
      *
      * @param Hex $hex
-     * @return Object The associated object
+     * @return MapObject The associated object
      *
      */
     public function remove(Hex $hex)

@@ -2,7 +2,7 @@
 
 namespace Tests\Map;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\ConsolePlotter\MapPlotter;
 use Hexopia\Map\MapField;
@@ -31,7 +31,7 @@ class MapPathingTest extends \PHPUnit\Framework\TestCase
         $steps = 0;
 
         foreach ($map->fields() as $mapField) {
-            if ($mapField->object && $mapField->object->getType() == Object::MARKER) {
+            if ($mapField->object && $mapField->object->getType() == MapObject::MARKER) {
                 $steps++;
             }
         }
@@ -149,7 +149,7 @@ class MapPathingTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($path, $map->pathBetween($start, $target));
     }
-    
+
     /**
      * @test
      */

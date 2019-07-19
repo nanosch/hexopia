@@ -2,7 +2,7 @@
 
 namespace Test;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Map\Map;
 use Hexopia\Map\MapField;
 use Tests\Mocks\SampleHeroObject;
@@ -28,7 +28,7 @@ class MapMorphedTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(3, $newMap->count());
     }
-    
+
     /**
      * @test
      */
@@ -41,7 +41,7 @@ class MapMorphedTest extends \PHPUnit\Framework\TestCase
         $map = new Map($mapFields);
 
         $unitMap = $map->filter(function (MapField $field){
-            return $field->object && $field->object->getType() === Object::UNIT;
+            return $field->object && $field->object->getType() === MapObject::UNIT;
         });
 
         $this->assertEquals(3, $map->count());

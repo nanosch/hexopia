@@ -2,10 +2,10 @@
 
 namespace Hexopia\Objects;
 
-class Unit extends Object
+class Unit extends MapObject
 {
     public function getType()
     {
-        return Object::UNIT;
+        return MapObject::UNIT;
     }
 }

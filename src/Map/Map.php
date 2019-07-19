@@ -6,7 +6,7 @@ use Ds\Collection;
 use Hexopia\Contracts\MapGuard;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\Helpers\LazyMapGuard;
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 
 class Map implements \IteratorAggregate, \ArrayAccess, Collection
 {
@@ -31,7 +31,7 @@ class Map implements \IteratorAggregate, \ArrayAccess, Collection
             $this->putAll($fields);
         }
     }
-    
+
     public function move(Object $object, Hex $target)
     {
         $field = $this->lookupObject($object);

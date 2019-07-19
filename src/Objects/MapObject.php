@@ -2,9 +2,9 @@
 
 namespace Hexopia\Objects;
 
-use \Hexopia\Contracts\Object as ObjectInterface;
+use \Hexopia\Contracts\MapObject as ObjectInterface;
 
-abstract class Object implements ObjectInterface
+abstract class MapObject implements ObjectInterface
 {
     function hash()
     {

@@ -2,7 +2,7 @@
 
 namespace Hexopia\Map\Traits;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Hex\Hex;
 use Hexopia\Map\MapField;
 
@@ -92,7 +92,7 @@ trait Accessor
      *
      * @return bool
      */
-    public function hasObject(Object $value): bool
+    public function hasObject(MapObject $value): bool
     {
         return $this->lookupObject($value) !== null;
     }

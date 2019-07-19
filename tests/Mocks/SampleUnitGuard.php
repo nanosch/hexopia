@@ -3,7 +3,7 @@
 namespace Tests\Mocks;
 
 use Hexopia\Contracts\MapGuard;
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Map\MapField;
 
 class SampleUnitGuard implements MapGuard
@@ -14,6 +14,6 @@ class SampleUnitGuard implements MapGuard
             return true;
         }
 
-        return $fieldInMap->object->getType() !== Object::UNIT;
+        return $fieldInMap->object->getType() !== MapObject::UNIT;
     }
 }

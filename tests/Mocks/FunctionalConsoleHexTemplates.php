@@ -2,7 +2,7 @@
 
 namespace Tests\Mocks;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Map\MapField;
 
 class FunctionalConsoleHexTemplates extends \Hexopia\Map\ConsolePlotter\Helpers\ConsoleHexTemplates
@@ -30,7 +30,7 @@ class FunctionalConsoleHexTemplates extends \Hexopia\Map\ConsolePlotter\Helpers\
         }
 
         switch ($mapField->object->getType()) {
-            case Object::UNIT:
+            case MapObject::UNIT:
                 return static::hero($mapField->object);
                 break;
             default:

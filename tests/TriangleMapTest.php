@@ -2,7 +2,7 @@
 
 namespace Test;
 
-use Hexopia\Contracts\Object;
+use Hexopia\Contracts\MapObject;
 use Hexopia\Map\MapField;
 use Hexopia\Map\Shapes\TriangleMap;
 use Hexopia\Objects\Unit;
@@ -30,7 +30,7 @@ class TriangleMapTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount($anzHex, $map->fields());
     }
-    
+
     /**
      * @test
      */
@@ -45,7 +45,7 @@ class TriangleMapTest extends \PHPUnit\Framework\TestCase
         $unitInMap = false;
 
         foreach ($map->fields() as $mapField) {
-            if ($mapField->object && $mapField->object->getType() == Object::UNIT) {
+            if ($mapField->object && $mapField->object->getType() == MapObject::UNIT) {
                 $unitInMap = true;
             }
         }
